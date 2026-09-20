@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Latestinssan/RTQ/main/website/public/icon.png" width="100" alt="RTQ Logo" />
+</p>
+
 # RTQ — Risk-Adaptive Capability Security Runtime
 
 [![npm version](https://img.shields.io/npm/v/@rtq/security.svg?style=flat-square)](https://www.npmjs.com/package/@rtq/security)

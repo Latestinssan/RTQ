@@ -47,8 +47,8 @@ export function Navbar() {
           {/* Brand */}
           <div className="flex items-center gap-6">
             <Link href="/" className="group flex items-center gap-3">
-              <div className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-sky-500/30 bg-sky-500/10 transition group-hover:border-sky-400 group-hover:bg-sky-500/20 group-hover:shadow-[0_0_20px_rgba(56,189,248,0.3)]">
-                <Shield className="h-5 w-5 text-sky-400 transition group-hover:scale-105" />
+              <div className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-sky-500/30 bg-sky-500/10 p-1.5 transition group-hover:border-sky-400 group-hover:bg-sky-500/20 group-hover:shadow-[0_0_20px_rgba(56,189,248,0.3)]">
+                <img src="/icon.png" alt="RTQ Logo" className="h-6 w-6 object-contain transition group-hover:scale-105" />
               </div>
               <div className="flex flex-col">
                 <span className="font-mono text-base font-black tracking-wider text-white">

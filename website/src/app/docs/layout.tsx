@@ -84,8 +84,8 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
               {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-sky-500/30 bg-sky-500/10 transition group-hover:bg-sky-500/20">
-                <Shield className="h-4 w-4 text-sky-400" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-sky-500/30 bg-sky-500/10 p-1 transition group-hover:bg-sky-500/20">
+                <img src="/icon.png" alt="RTQ Logo" className="h-5 w-5 object-contain" />
               </div>
               <span className="font-mono text-sm font-black tracking-widest text-white">RTQ</span>
             </Link>
