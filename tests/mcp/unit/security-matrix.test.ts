@@ -17,6 +17,7 @@
  */
 
 import { describe, expect, it, vi } from "vitest";
+import { mcpAdvice } from "../helpers/risk-advice";
 import {
   // Core modules
   McpRegistry,
@@ -88,7 +89,7 @@ function makeToolMeta(over: Partial<McpToolMeta> = {}): McpToolMeta {
 
 function makeGateway(overrides: Partial<McpGatewayConfig> = {}) {
   const tickets = new Map<string, unknown>();
-  const authorizeCalls: unknown[] = [];
+  const authorizeCalls: any[] = [];
   const executeCalls: string[] = [];
   const auditEvents: Array<{ event: string; data: Record<string, unknown> }> = [];
 
@@ -123,7 +124,7 @@ function makeGateway(overrides: Partial<McpGatewayConfig> = {}) {
       park: (id: string, v: unknown) => { tickets.set(id, v); },
     },
     defaultLimits: { maxResultSizeBytes: 64 * 1024 },
-    onAudit: (event, data) => { auditEvents.push({ event, data }); },
+    onAudit: (event: string, data: Record<string, unknown>) => { auditEvents.push({ event, data }); },
     _authorizeCalls: authorizeCalls,
     _executeCalls: executeCalls,
     _tickets: tickets,
@@ -188,11 +189,7 @@ describe("46.30 Security Matrix — Unknown entity denial", () => {
       capabilityName: "mcp://srv/tool",
       serverId: "srv",
       toolName: "tool",
-      riskAdvice: {
-        severity: "low",
-        effectiveOperations: ["unknown"],
-        riskContributions: [],
-      },
+      riskAdvice: mcpAdvice("low", ["unknown"]),
     });
     expect(result.allowed).toBe(false);
   });
@@ -422,7 +419,7 @@ describe("46.30 Security Matrix — Policy engine", () => {
       capabilityName: "mcp://srv/blocked_tool",
       serverId: "srv",
       toolName: "blocked_tool",
-      riskAdvice: { severity: "low", effectiveOperations: ["read"], riskContributions: [] },
+      riskAdvice: mcpAdvice("low", ["read"]),
     });
     expect(result.allowed).toBe(false);
   });
@@ -451,7 +448,7 @@ describe("46.30 Security Matrix — Policy engine", () => {
       serverId: "srv",
       toolName: "tool",
       tenant: "tenant-b",
-      riskAdvice: { severity: "low", effectiveOperations: ["read"], riskContributions: [] },
+      riskAdvice: mcpAdvice("low", ["read"]),
     });
     expect(result.allowed).toBe(false);
   });

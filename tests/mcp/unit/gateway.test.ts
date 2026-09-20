@@ -79,7 +79,7 @@ function makeGatewayConfig(overrides: Partial<McpGatewayConfig> = {}): McpGatewa
       park: (id: string, v: unknown) => { tickets.set(id, v); },
     },
     defaultLimits: { maxResultSizeBytes: 64 * 1024 },
-    onAudit: (event, data) => { auditEvents.push({ event, ...data }); },
+    onAudit: (event: string, data: Record<string, unknown>) => { auditEvents.push({ event, ...data }); },
     _authorizeCalls: authorizeCalls,
     _executeCalls: executeCalls,
     _tickets: tickets,
