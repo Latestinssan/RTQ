@@ -102,7 +102,7 @@ export default function OverviewPage() {
       <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 space-y-4">
         <h2 className="text-lg font-bold text-white flex items-center gap-2">
           <Download className="text-sky-400" size={18} />
-          <span>Release v1.0.0 &amp; Downloads</span>
+          <span>Release v0.1.0 &amp; Downloads</span>
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 text-xs">
           <a
@@ -112,7 +112,7 @@ export default function OverviewPage() {
             className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-4 transition hover:bg-white/10 hover:border-white/20"
           >
             <div className="space-y-1">
-              <span className="font-mono font-bold text-sky-400 text-sm">GitHub Release v1.0.0</span>
+              <span className="font-mono font-bold text-sky-400 text-sm">GitHub Release v0.1.0</span>
               <p className="text-white/50">Tag provenance, assets &amp; source code</p>
             </div>
             <ExternalLink size={16} className="text-white/40" />
