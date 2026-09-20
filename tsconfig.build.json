@@ -2,13 +2,11 @@
   "files": [],
   "references": [
     { "path": "packages/crypto" },
-    { "path": "packages/mcp" },
     { "path": "packages/audit" },
     { "path": "packages/clarification" },
     { "path": "packages/risk" },
     { "path": "packages/policy" },
     { "path": "packages/approval" },
-    { "path": "packages/mobile" },
     { "path": "packages/sandbox" },
     { "path": "packages/core" },
     { "path": "packages/security" },
