@@ -1,7 +1,10 @@
 # RTQ — Risk-Adaptive Capability Security Runtime
 
 [![npm version](https://img.shields.io/npm/v/@rtq/security.svg?style=flat-square)](https://www.npmjs.com/package/@rtq/security)
+[![npm downloads](https://img.shields.io/npm/dm/@rtq/security.svg?style=flat-square&label=npm%20downloads)](https://www.npmjs.com/package/@rtq/security)
 [![GitHub Release](https://img.shields.io/github/v/release/Latestinssan/RTQ?style=flat-square)](https://github.com/Latestinssan/RTQ/releases/tag/v1.0.0)
+[![GitHub All Releases Downloads](https://img.shields.io/github/downloads/Latestinssan/RTQ/total?style=flat-square&color=emerald&label=github%20downloads)](https://github.com/Latestinssan/RTQ/releases/tag/v1.0.0)
+[![APK Downloads](https://img.shields.io/github/downloads/Latestinssan/RTQ/v1.0.0/app-release.apk?style=flat-square&label=apk%20downloads&color=blue)](https://github.com/Latestinssan/RTQ/releases/download/v1.0.0/app-release.apk)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg?style=flat-square)](LICENSE)
 
 RTQ is a security-focused capability-security runtime for Node.js, TypeScript, Model Context Protocol (MCP) servers, and mobile approval hosts. Security-critical packages declare **zero third-party npm runtime dependencies**. It turns _"can this agent/tool do this?"_ into an **evidence-backed security pipeline**:
@@ -15,13 +18,13 @@ Command → Capability (registered) → Risk (authoritative) → Policy (default
 
 ---
 
-## 📥 Downloads & Packages
+## 📥 Downloads & Live Metrics
 
-| Resource                      | Link                                                                                                        | Description                                                  |
-| :---------------------------- | :---------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------- |
-| **GitHub Release v1.0.0**     | [Release Notes & Assets](https://github.com/Latestinssan/RTQ/releases/tag/v1.0.0)                           | Source code, tag provenance, and release metadata            |
-| **Android Mobile App (.apk)** | [Direct APK Download (62 MB)](https://github.com/Latestinssan/RTQ/releases/download/v1.0.0/app-release.apk) | Flutter Android app for local Ed25519 QR challenge approvals |
-| **npm Registry**              | [@rtq Scope on npm](https://www.npmjs.com/org/rtq)                                                          | All 12 published `@rtq/*` packages                           |
+| Resource                      | Link / Badge                                                                                                                                                                                                                         | Description                                                  |
+| :---------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------- |
+| **GitHub Release v1.0.0**     | [![GitHub All Releases Downloads](https://img.shields.io/github/downloads/Latestinssan/RTQ/total?style=flat-square&color=emerald&label=Release%20Downloads)](https://github.com/Latestinssan/RTQ/releases/tag/v1.0.0)                | Source code, tag provenance, and release metadata            |
+| **Android Mobile App (.apk)** | [![APK Downloads](https://img.shields.io/github/downloads/Latestinssan/RTQ/v1.0.0/app-release.apk?style=flat-square&label=APK%20Downloads&color=blue)](https://github.com/Latestinssan/RTQ/releases/download/v1.0.0/app-release.apk) | Flutter Android app for local Ed25519 QR challenge approvals |
+| **npm Registry**              | [![npm downloads](https://img.shields.io/npm/dm/@rtq/security.svg?style=flat-square&label=npm%20Downloads)](https://www.npmjs.com/package/@rtq/security)                                                                             | All 12 published `@rtq/*` packages                           |
 
 ### Published npm Packages
 
