@@ -1,0 +1,24 @@
+{
+  "name": "@rtq/mcp",
+  "version": "0.1.0",
+  "description": "RTQ Business-Grade MCP integration layer: protocol client/server, discovery, tool-to-capability mapping, schema validation, independent risk, enterprise policy, credential isolation, authorization tickets, sandboxing, audit and adversarial contract tests. MCP is an integration/protocol layer, never an authorization boundary.",
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b tsconfig.json"
+  },
+  "dependencies": {
+    "@rtq/approval": "0.1.0",
+    "@rtq/audit": "0.1.0",
+    "@rtq/core": "0.1.0",
+    "@rtq/crypto": "0.1.0",
+    "@rtq/policy": "0.1.0",
+    "@rtq/risk": "0.1.0",
+    "@rtq/sandbox": "0.1.0",
+    "@rtq/security": "0.1.0"
+  }
+}

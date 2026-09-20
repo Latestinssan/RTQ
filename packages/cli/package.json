@@ -17,6 +17,7 @@
   "dependencies": {
     "@rtq/core": "0.1.0",
     "@rtq/crypto": "0.1.0",
+    "@rtq/mcp": "0.1.0",
     "@rtq/policy": "0.1.0",
     "@rtq/sandbox": "0.1.0",
     "@rtq/security": "0.1.0"

@@ -9,8 +9,10 @@
   "references": [
     { "path": "../core" },
     { "path": "../crypto" },
-    { "path": "../mcp" },
+    { "path": "../audit" },
+    { "path": "../risk" },
     { "path": "../policy" },
+    { "path": "../approval" },
     { "path": "../sandbox" },
     { "path": "../security" }
   ]

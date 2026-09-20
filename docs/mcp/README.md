@@ -13,16 +13,15 @@ RTQ's existing authorization boundary.
 > MCP server input. See [`security.md`](./security.md).
 
 **What MCP tool calls are and are not protected by today (honest status).**
-MCP tool calls ARE protected through the hygiene and enforcement layers that
-this package already implements and tests: strict schema/result
-normalization, fail-closed registration of unknown/unsafe schemas, result
-redaction and size/depth limiting, and (for local stdio servers) OS-sandboxed
-execution that fails closed. They are NOT yet protected by RTQ's policy
-evaluation, risk scoring, or human-approval gating on the tool call itself —
-those components exist as tested packages, but wiring them onto the MCP
-tool-call path is still **planned, not started** (see the capability matrix's
-"Planned" rows). In other words: this layer keeps MCP *data* safe; the
-decision-making that authorizes MCP *actions* is not yet connected here.
+MCP tool calls ARE protected through the full RTQ pipeline: the `McpGateway`
+wires every tool invocation through schema validation, effective-operation
+classification, advisory risk scoring (raise-only), policy evaluation
+(fail-closed), single-use non-replayable authorization tickets, and normalized
+result handling with size/depth limits and secret redaction. Credential
+isolation stores scoped credentials that are never returned to servers. Local
+stdio servers can be OS-sandboxed; when a sandbox is required and unavailable,
+the connection fails closed. Contract checks verify schema completeness and
+normalization idempotency before any tool becomes invocable.
 
 ## Scope
 
@@ -39,14 +38,16 @@ This package implements and tests:
 | Tool schema normalization & hardening (fail-closed on $ref etc.)       | ✅ implemented & tested                      |
 | Result normalization (size/depth limits, redaction, advisory flags)    | ✅ implemented & tested                      |
 | Server/tool registration records (trust state, schema hashes, epoch)   | ✅ implemented & tested                      |
-| Credential isolation (credential refs, never inline)                   | 🟦 types defined; store wiring pending       |
-| Policy evaluation, tickets, approvals on MCP calls                     | 🟦 design in `types.ts`; integration pending |
-| Observability (metrics snapshot per 46.33)                             | 🟦 types defined; emit pending               |
+| Credential isolation (scoped vault, never returned to server)          | ✅ implemented & tested                      |
+| Policy evaluation on MCP calls (fail-closed, transport/tenant gates)   | ✅ implemented & tested                      |
+| Risk advisory (raise-only, operation classification)                   | ✅ implemented & tested                      |
+| McpGateway (full invoke pipeline: validate→risk→policy→authorize→exec) | ✅ implemented & tested                      |
+| Contract-check runner (schema completeness, normalization idempotency) | ✅ implemented & tested                      |
+| CLI admin commands (`rtq mcp servers/tools/contracts/revoke/metrics`)  | ✅ implemented                               |
+| Observability (metrics snapshot per 46.33)                             | ✅ implemented (in gateway.getMetrics())     |
 
-Legend: ✅ **tested** (in `tests/mcp/`), 🟦 **designed** (types/contracts
-exist, runtime not yet wired), ⬜ not started. Untested entries are marked
-honestly here and in the [capability matrix](./capability-matrix.md); there is
-no claim of completeness beyond what the tests prove.
+Legend: ✅ **implemented & tested** (in `tests/mcp/`). No claim of
+completeness beyond what the tests prove.
 
 ## Package layout
 
@@ -60,37 +61,58 @@ packages/mcp/src/
   schemas.ts      Tool schema normalization + validation
   results.ts      Result normalization + redaction + flags
   registry.ts     Server/tool trust records (46.2, 46.5–46.8, 46.11–46.14)
+  risk.ts         Risk advisory — raise-only operation classification (46.14, 46.24–46.25)
+  policy.ts       Policy engine — fail-closed evaluation on MCP calls (46.16–46.20)
+  credentials.ts  Credential vault — scoped storage, never returned to servers
+  gateway.ts      McpGateway — full invoke pipeline (46.28–46.33)
+  contract.ts     Contract-check runner — schema completeness & normalization (46.29)
 ```
 
-## Quick start (protocol + reference server)
+## Quick start (gateway pipeline)
 
 ```ts
-import { HttpConnection, McpReferenceServer } from "@rtq/mcp";
+import {
+  McpGateway, McpRegistry, McpPolicyEngine, McpRiskAdvisor,
+  InMemoryConnection, McpReferenceServer,
+} from "@rtq/mcp";
 
-// Connect to a remote MCP server over HTTPS
-const conn = new HttpConnection("https://mcp.example.com/mcp", {
-  headers: { authorization: "Bearer <credential-ref>" }, // ref, never inline secret
+// 1. Create the gateway with RTQ-injected authorize/execute callbacks.
+const gateway = new McpGateway({
+  registry: new McpRegistry(),
+  policy: new McpPolicyEngine({
+    rules: [{ instrument: "tool", pattern: "mcp://my-server/*", allow: true }],
+    allowedEffectiveOperations: new Map([["read", ["mcp://*/*"]]]),
+  }),
+  riskAdvisor: new McpRiskAdvisor(),
+  authorize: async (params) => rtq.authorize(params),
+  execute: async (ticketId) => rtq.execute(ticketId),
+  tickets: ticketStore,
 });
-await conn.connect();
 
-const init = await conn.request("initialize", {
-  protocolVersion: "2025-06-18",
-  clientInfo: { name: "my-app", version: "1.0.0" },
-  capabilities: {},
-});
-```
-
-Or embed the reference server locally for tests and embedding:
-
-```ts
-import { InMemoryConnection, McpReferenceServer } from "@rtq/mcp";
-
+// 2. Connect to a server.
 const server = new McpReferenceServer({
   tools: [{ name: "echo", inputSchema: { type: "object" } }],
 });
 const conn = new InMemoryConnection(server);
+const sessionId = await gateway.connect("my-server", conn);
+
+// 3. Discover tools.
+const tools = await gateway.discover(sessionId);
+
+// 4. Invoke a tool through the full RTQ pipeline.
+const result = await gateway.invoke("my-server", "echo", { msg: "hello" });
+// result.status → "executed" | "approval_required" | "denied"
+```
+
+Or connect to a remote MCP server over HTTPS:
+
+```ts
+import { HttpConnection } from "@rtq/mcp";
+
+const conn = new HttpConnection("https://mcp.example.com/mcp", {
+  headers: { authorization: "Bearer <credential-ref>" }, // ref, never inline secret
+});
 await conn.connect();
-const tools = await conn.request("tools/list", {});
 ```
 
 ## Contracts and guarantees
@@ -103,9 +125,19 @@ const tools = await conn.request("tools/list", {});
   tuple-form `items`, unsafe keys (`__proto__`), and non-finite numbers all
   mark the affected tool/schema incomplete; registration fails unless policy
   explicitly approves.
+- **Full pipeline on every invocation.** `McpGateway.invoke()` runs:
+  schema validation → effective-operation classification → risk advisory
+  (raise-only) → policy evaluation (fail-closed) → single-use non-replayable
+  authorization ticket → execute → normalize result → audit.
+- **Contract checks.** `runContractCheck()` verifies schema completeness,
+  normalization idempotency, argument validation, capability name
+  well-formedness, and severity range before any tool becomes invocable.
 - **Results as data.** Results are truncated or denied by size/depth,
   redacted for secret-shaped values, and annotated with _advisory_ flags for
   injection-like content. Flags never authorize anything.
+- **Credential isolation.** Credentials are stored in a scoped vault and
+  never returned to MCP servers; the gateway injects them into the transport
+  layer only at invocation time.
 - **Sandboxed local execution.** stdio servers can run inside the OS sandbox;
   when a sandbox is required and unavailable, the connection fails closed.
 

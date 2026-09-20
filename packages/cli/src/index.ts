@@ -17,6 +17,7 @@ import { signCanonical, timingSafeEqualHex } from "@rtq/crypto";
 import { createSandbox } from "@rtq/sandbox";
 import type { PolicyRule } from "@rtq/policy";
 import type { ClarificationRule } from "@rtq/clarification";
+import { runMcpCli } from "./mcp";
 
 interface ConfigModule {
   capabilities?: CapabilityDef[];
@@ -72,6 +73,8 @@ export async function runCli(argv: string[]): Promise<number> {
       return cmdSandbox(rest);
     case "verify":
       return cmdVerify(rest);
+    case "mcp":
+      return runMcpCli(rest);
     case "diagnostics":
       return cmdDiagnostics(rest);
     case "help":
@@ -96,6 +99,7 @@ Commands:
   policy check <command.json> [--config <f>]
       [--origin <origin>] [--resource <path>]
                                             Evaluate policy for a structured command.
+  mcp <subcommand>                         MCP admin commands (servers/tools/contracts/revoke/metrics).
   sandbox test [--workspace <dir>]          Run the platform sandbox smoke test.
   verify signature --ticket <ticket.json>   Verify a ticket's HMAC signature using RTQ_SIGNING_KEY.
   diagnostics                               Print runtime/platform diagnostics.
