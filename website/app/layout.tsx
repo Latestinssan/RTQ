@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Head } from "nextra/components";
 import { getPageMap } from "nextra/page-map";
-import { ClientLayout } from "./client-layout";
+import { ManualLayout } from "./manual-layout";
 import "nextra-theme-docs/style.css";
 
 export const metadata = {
@@ -9,9 +9,6 @@ export const metadata = {
   description:
     "Dependency-free capability-security runtime. Every operation is an explicitly registered capability; every authorization is a short-lived, single-use, cryptographically-signed ticket.",
 };
-
-// Prevent static prerendering of this layout (Layout component needs runtime context)
-export const dynamic = "force-dynamic";
 
 export default async function RootLayout({
   children,
@@ -23,7 +20,7 @@ export default async function RootLayout({
     <html lang="en" dir="ltr" suppressHydrationWarning>
       <Head />
       <body>
-        <ClientLayout pageMap={pageMap}>{children}</ClientLayout>
+        <ManualLayout pageMap={pageMap}>{children}</ManualLayout>
       </body>
     </html>
   );
