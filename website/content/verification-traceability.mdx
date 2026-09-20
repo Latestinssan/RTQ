@@ -1,0 +1,85 @@
+# Verification & Source Traceability
+
+Every security claim in RTQ is backed by a real test, a real source file, and a
+specific line of implementation. This page maps each claim to its evidence so
+anyone can verify independently.
+
+## Security invariants (I1–I12)
+
+All 12 automated invariants live in a single file and run in CI on every push.
+
+| Invariant | Claim | Source file | Test file |
+| --- | --- | --- | --- |
+| I1 | Capability must be registered before authorization | `packages/core/src/capability-registry.ts` (class `CapabilityRegistry`, `registerCapability` method) | `tests/invariants/invariants.test.ts` |
+| I2 | Authorization ticket is single-use (second redemption fails) | `packages/core/src/ticket-store.ts` (ticket redemption + revocation) | `tests/invariants/invariants.test.ts` |
+| I3 | Ticket is bound to exact operation, risk, policy, origin | `packages/core/src/ticket-store.ts` (`boundTo` field validation) | `tests/invariants/invariants.test.ts` |
+| I4 | Risk engine is authoritative — caller claims cannot downgrade | `packages/risk/src/index.ts:89-100` (`evaluate` function: `maxRisk(baseLevel, claimedRisk)`) | `tests/invariants/invariants.test.ts` |
+| I5 | Policy defaults to deny — no match = denial | `packages/policy/src/index.ts:148` (`defaultMode ?? "deny"`) | `tests/invariants/invariants.test.ts` |
+| I6 | HMAC signature is deterministic (same input → same output) | `packages/crypto/src/index.ts` (`hmacSha256`, `canonicalJson`) | `tests/invariants/invariants.test.ts` |
+| I7 | Constant-time comparison prevents timing attacks | `packages/crypto/src/index.ts` (`constantTimeEqual`) | `tests/invariants/invariants.test.ts` |
+| I8 | Redaction scrubs secret-shaped values from results | `packages/crypto/src/index.ts` (`redact` function) | `tests/invariants/invariants.test.ts` |
+| I9 | Sandbox reports `sandboxed: false` when truly unsandboxed | `packages/sandbox/src/index.ts:290` (`sandboxed: true` only when OS confirms) | `tests/invariants/invariants.test.ts` |
+| I10 | CLI `capabilities` command lists only registered capabilities | `packages/cli/src/commands/capabilities.ts` | `tests/invariants/invariants.test.ts` |
+| I11 | CLI `policy check` returns deny for unregistered operations | `packages/cli/src/commands/policy-check.ts` | `tests/invariants/invariants.test.ts` |
+| I12 | Origin field is never spoofable by caller | `packages/core/src/ticket-store.ts` (origin bound at issuance, not from caller) | `tests/invariants/invariants.test.ts` |
+
+## Test suites
+
+| Suite | What it covers | File | Count |
+| --- | --- | --- | --- |
+| Unit tests | Core types, crypto, registry, risk, policy | `tests/unit/` | ~80 |
+| Security tests | Pipeline authorization, ticket lifecycle, redaction | `tests/security/` | ~30 |
+| Filesystem tests | Audit log writes, redacted output | `tests/fs/` | ~15 |
+| Sandbox tests | OS enforcement per platform (macOS/Linux/Windows) | `tests/sandbox/` | ~20 |
+| CLI tests | All CLI commands against real config | `tests/cli/` | ~13 |
+| **Invariants** | **12 automated security invariants (I1–I12)** | `tests/invariants/` | **12** |
+
+## CI workflows
+
+| Workflow | Trigger | What it runs | File |
+| --- | --- | --- | --- |
+| CI | Every push | typecheck, format, unit/security/fs/cli tests, build | `.github/workflows/ci.yml` |
+| Security | Every push | 12 invariants + attackcraft suite | `.github/workflows/security.yml` |
+| Sandbox | Every push | OS sandbox enforcement per platform | `.github/workflows/sandbox.yml` |
+| Docs | Every push | website build (Nextra 4.6.1) | `.github/workflows/docs.yml` |
+
+## Package source files
+
+| Package | Entry point | Key exports |
+| --- | --- | --- |
+| `@rtq/crypto` | `packages/crypto/src/index.ts` | `hmacSha256`, `canonicalJson`, `constantTimeEqual`, `sign`, `verify`, `redact` |
+| `@rtq/core` | `packages/core/src/capability-registry.ts` | `CapabilityRegistry`, `AuthorizationTicket`, `registerCapability` |
+| `@rtq/risk` | `packages/risk/src/index.ts:89` | `evaluate` (authoritative risk engine) |
+| `@rtq/policy` | `packages/policy/src/index.ts:142` | `PolicyEngine` (default-deny, glob matching) |
+| `@rtq/clarification` | `packages/clarification/src/index.ts` | Structured questions for security-critical parameters |
+| `@rtq/approval` | `packages/approval/src/index.ts` | Challenge-response QR/mobile protocol |
+| `@rtq/sandbox` | `packages/sandbox/src/index.ts:64` | `createSandbox` (macOS Seatbelt, Linux bubblewrap, Windows AppContainer) |
+| `@rtq/audit` | `packages/audit/src/index.ts` | Structured, redacted security events |
+| `@rtq/security` | `packages/security/src/index.ts` | `createRTQ` (full pipeline façade) |
+| `@rtq/cli` | `packages/cli/src/index.ts` | `capabilities`, `policy check`, `sandbox test`, `verify`, `diagnostics` |
+
+## How to verify locally
+
+```sh
+# Run all green-scoped tests
+npx vitest run tests/{unit,security,fs,sandbox,invariants,cli}
+
+# Run the 12 invariants specifically
+npx vitest run tests/invariants
+
+# Build all 10 packages
+npx tsc -b packages/{crypto,audit,core,risk,policy,clarification,approval,sandbox,security,cli}
+
+# Run the CLI
+RTQ_SIGNING_KEY="$(openssl rand -hex 32)" npx rtq capabilities --config settings/config.js
+
+# Run the example
+npx tsx examples/agent.ts
+```
+
+## Deployment proof
+
+- **Live site**: [https://onecm.vercel.app](https://onecm.vercel.app)
+- **GitHub repo**: [https://github.com/Latestinssan/RTQ](https://github.com/Latestinssan/RTQ)
+- **Vercel deployment**: `dpl_7gp3UemjbZJyY92NHBDCeUmQjYSa` (production)
+- **CI status**: GitHub Actions — all workflows run on every push to `main`
