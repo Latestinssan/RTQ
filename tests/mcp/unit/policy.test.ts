@@ -5,6 +5,7 @@ import {
   type McpPolicyRule,
   type McpEffectiveOperation,
 } from "@rtq/mcp";
+import { mcpAdvice } from "../helpers/risk-advice";
 
 describe("matchesMcpPattern", () => {
   it("wildcard matches everything", () => {
@@ -61,11 +62,7 @@ describe("McpPolicyEngine", () => {
       capabilityName: "mcp://srv1/read_file",
       serverId: "srv1",
       toolName: "read_file",
-      riskAdvice: {
-        severity: "low",
-        effectiveOperations: ["read"],
-        riskContributions: [],
-      },
+      riskAdvice: mcpAdvice("low", ["read"]),
     });
     expect(result.allowed).toBe(true);
   });
@@ -108,11 +105,7 @@ describe("McpPolicyEngine", () => {
       capabilityName: "mcp://srv1/test",
       serverId: "srv1",
       toolName: "test",
-      riskAdvice: {
-        severity: "low",
-        effectiveOperations: ["unknown"],
-        riskContributions: [],
-      },
+      riskAdvice: mcpAdvice("low", ["unknown"]),
     });
     expect(result.allowed).toBe(false);
   });
@@ -130,11 +123,7 @@ describe("McpPolicyEngine", () => {
       serverId: "srv1",
       toolName: "test",
       tenant: "tenant-b",
-      riskAdvice: {
-        severity: "low",
-        effectiveOperations: ["read"],
-        riskContributions: [],
-      },
+      riskAdvice: mcpAdvice("low", ["read"]),
     });
     expect(result.allowed).toBe(false);
   });

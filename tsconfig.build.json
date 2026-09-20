@@ -10,6 +10,8 @@
     { "path": "packages/sandbox" },
     { "path": "packages/core" },
     { "path": "packages/security" },
+    { "path": "packages/mcp" },
+    { "path": "packages/mobile" },
     { "path": "packages/cli" }
   ]
 }

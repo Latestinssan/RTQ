@@ -1,0 +1,21 @@
+{
+  "name": "Aartiq",
+  "short_name": "Aartiq",
+  "description": "Open-source browser with built-in AI assistant and OS automation",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#03040b",
+  "theme_color": "#0ea5e9",
+  "icons": [
+    {
+      "src": "/logo-transparent.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo-transparent.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

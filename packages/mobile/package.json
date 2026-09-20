@@ -1,0 +1,19 @@
+{
+  "name": "@rtq/mobile",
+  "version": "0.1.0",
+  "description": "RTQ mobile approval host transport: pairing + rtq-approval-v1 approval service and HTTP endpoints. Transport is untrusted; all security is in the signed protocol.",
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b tsconfig.json"
+  },
+  "dependencies": {
+    "@rtq/approval": "0.1.0",
+    "@rtq/core": "0.1.0",
+    "@rtq/crypto": "0.1.0"
+  }
+}
