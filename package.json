@@ -13,6 +13,7 @@
     "test": "vitest run",
     "test:unit": "vitest run tests/unit",
     "test:mcp": "vitest run tests/mcp",
+    "test:cli": "vitest run tests/cli",
     "test:mobile": "vitest run tests/mobile tests/protocol",
     "test:security": "vitest run tests/security",
     "test:fs": "vitest run tests/fs",

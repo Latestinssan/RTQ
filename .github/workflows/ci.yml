@@ -37,5 +37,7 @@ jobs:
         name: "filesystem policy tests"
       - run: npm run test:cli
         name: "CLI tests"
+      - run: npm run test:mcp
+        name: "MCP spec §46 tests"
       - run: npm run build
         name: "build (tsc --build tsconfig.build.json)"

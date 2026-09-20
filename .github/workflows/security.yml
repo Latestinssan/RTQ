@@ -24,9 +24,9 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Run the twelve automated security invariants
-        run: npx vitest run tests/invariants --reporter=basic
+        run: npx vitest run tests/invariants
       - name: Run attack-tracing attackcraft suite
-        run: npx vitest run tests/attackcraft --reporter=basic
+        run: npx vitest run tests/attackcraft
 
   pipeline:
     name: "pipeline + audit (${{ matrix.os }})"
@@ -42,7 +42,7 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - run: npx vitest run tests/security tests/unit --reporter=basic
+      - run: npx vitest run tests/security tests/unit
 
   diagnostics:
     name: "fail-closed diagnostics report"
