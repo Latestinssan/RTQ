@@ -17,3 +17,10 @@ apps/rtq-mobile/android/.gradle/
 apps/rtq-mobile/android/local.properties
 apps/rtq-mobile/.flutter-plugins
 apps/rtq-mobile/.flutter-plugins-dependencies
+.vercel
+
+# Firebase configs are injected from GitHub Actions secrets at build time
+# (GOOGLE_SERVICES_JSON / GOOGLE_SERVICE_INFO_PLIST). Local copies are
+# development conveniences and must never be committed.
+apps/rtq-mobile/android/app/google-services.json
+apps/rtq-mobile/ios/Runner/GoogleService-Info.plist
