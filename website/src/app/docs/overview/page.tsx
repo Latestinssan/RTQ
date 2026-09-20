@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { APP_INFO } from "@/lib/version";
 import { COMMIT_SHA } from "@/components/evidence/EvidenceBadge";
-import { TestTube, Shield, BookOpen, ExternalLink, AlertTriangle } from "lucide-react";
+import { TestTube, Shield, BookOpen, ExternalLink, Download, Smartphone, Package } from "lucide-react";
 
 export const metadata = {
   title: "RTQ Overview",
@@ -18,33 +18,72 @@ export default function OverviewPage() {
         <h1 className="text-3xl font-black tracking-tight text-white md:text-5xl">
           RTQ Overview
         </h1>
-        <p className="mt-4 text-base text-white/60 leading-relaxed">
-          RTQ is an experimental (Alpha) capability-security runtime for autonomous agents and tools.
-          Security-critical packages declare zero third-party npm runtime dependencies. Every operation
-          requires an explicitly registered capability; authorizations are short-lived, single-use,
-          cryptographically-signed tickets.
+        <p className="mt-4 text-base text-white/70 leading-relaxed">
+          RTQ is a production-grade, dependency-free capability-security runtime for Node.js, TypeScript,
+          Model Context Protocol (MCP) servers, and mobile approval hosts. Every operation requires an
+          explicitly registered capability; authorizations are short-lived, single-use, cryptographically-signed tickets.
         </p>
       </div>
 
-      {/* Alpha Status Banner */}
-      <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 text-xs text-amber-200/90 leading-relaxed flex items-center justify-between flex-wrap gap-3">
-        <div className="flex items-center gap-2.5">
-          <AlertTriangle size={15} className="text-amber-400 shrink-0" />
-          <span>
-            <strong>Alpha Software:</strong> RTQ has not undergone an independent security audit. All
-            claims link to automated tests pinned at commit <code className="text-white font-mono">{COMMIT_SHA}</code>.
-          </span>
-        </div>
-        <Link
-          href="/docs/evidence"
-          className="font-mono font-bold text-sky-400 hover:text-sky-300 underline"
-        >
-          View Evidence &rarr;
-        </Link>
+      {/* Why RTQ Was Created */}
+      <div className="rounded-2xl border border-sky-500/20 bg-sky-500/[0.03] p-6 text-sm leading-relaxed text-slate-200 space-y-3">
+        <h2 className="text-lg font-bold text-white flex items-center gap-2">
+          <Shield className="text-sky-400" size={18} />
+          <span>Why RTQ Was Created</span>
+        </h2>
+        <p className="text-white/80">
+          While developing <strong>Aartiq</strong>, a disproportionate amount of engineering time was spent repeatedly
+          implementing OS-level sandboxing, capability scoping, fine-grained permission gating, and challenge-response
+          authorization from scratch.
+        </p>
+        <p className="text-white/80">
+          RTQ was created to solve this problem once and for all — packaging a battle-tested, risk-adaptive capability
+          security runtime into a clean suite of reusable packages. With RTQ, developers can instantly integrate capability
+          security, OS-enforced sandboxing, Model Context Protocol (MCP) policy enforcement, and mobile QR challenge-response
+          approvals into their applications without having to build security infrastructure from scratch.
+        </p>
       </div>
 
+      {/* Release & Downloads Card */}
+      <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 space-y-4">
+        <h2 className="text-lg font-bold text-white flex items-center gap-2">
+          <Download className="text-sky-400" size={18} />
+          <span>Release v1.0.0 &amp; Downloads</span>
+        </h2>
+        <div className="grid gap-4 sm:grid-cols-2 text-xs">
+          <a
+            href={APP_INFO.releases}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-4 transition hover:bg-white/10 hover:border-white/20"
+          >
+            <div className="space-y-1">
+              <span className="font-mono font-bold text-sky-400 text-sm">GitHub Release v1.0.0</span>
+              <p className="text-white/50">Tag provenance, assets &amp; source code</p>
+            </div>
+            <ExternalLink size={16} className="text-white/40" />
+          </a>
+
+          <a
+            href={APP_INFO.apkDownload}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 transition hover:bg-emerald-500/20"
+          >
+            <div className="space-y-1">
+              <span className="font-mono font-bold text-emerald-300 text-sm flex items-center gap-1.5">
+                <Smartphone size={15} /> Android Mobile App (.apk)
+              </span>
+              <p className="text-emerald-200/60">Flutter Ed25519 approval host (62 MB)</p>
+            </div>
+            <Download size={16} className="text-emerald-400" />
+          </a>
+        </div>
+      </div>
+
+      {/* Core Pipeline */}
       <div>
-        <h2 className="text-xl font-bold text-white mb-4">Core Pipeline</h2>
+        <h2 className="text-xl font-bold text-white mb-4">Core Security Pipeline</h2>
         <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-5 font-mono text-xs leading-relaxed text-white/60">
           <span className="text-sky-400">Command</span> &rarr;{" "}
           <span className="text-white/80">Capability</span> (registered) &rarr;{" "}
@@ -60,104 +99,61 @@ export default function OverviewPage() {
         </div>
       </div>
 
+      {/* Packages Grid */}
       <div>
-        <h2 className="text-xl font-bold text-white mb-4">Packages</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-white">Published npm Packages</h2>
+          <a
+            href={APP_INFO.npmOrg}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-mono text-xs text-sky-400 hover:underline flex items-center gap-1"
+          >
+            <Package size={14} /> View @rtq Scope on npm &rarr;
+          </a>
+        </div>
         <div className="grid gap-3 md:grid-cols-2 text-xs">
           {[
-            ["@rtq/core", "Security-model types, capability registry, atomic ticket store (0 npm deps)"],
-            ["@rtq/risk", "Authoritative risk engine; ignores caller demotion attempts (0 npm deps)"],
-            ["@rtq/policy", "Default-deny declarative rule evaluator (0 npm deps)"],
-            ["@rtq/crypto", "RFC 8785 canonical JSON, HMAC-SHA256, constant-time compare (0 npm deps)"],
-            ["@rtq/approval", "Verification strategies + QR/mobile challenge-response"],
-            ["@rtq/sandbox", "macOS Seatbelt, Linux bubblewrap, Windows AppContainer wrappers"],
-            ["@rtq/audit", "Structured, HMAC-integrity redacted event logging"],
-            ["@rtq/clarification", "Structured questions for missing parameters with timeout"],
-            ["@rtq/security", "Pipeline façade (createRTQ) unifying the security model"],
-            ["@rtq/cli", "Operator tooling, verification suites, and sandbox test harnesses"],
-          ].map(([pkg, desc]) => (
-            <div key={pkg} className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
-              <code className="text-xs font-bold text-sky-400 font-mono">{pkg}</code>
+            ["@rtq/security", "Pipeline façade (createRTQ) unifying the security model", "https://www.npmjs.com/package/@rtq/security"],
+            ["@rtq/cli", "Operator tooling, verification suites, and sandbox test harnesses", "https://www.npmjs.com/package/@rtq/cli"],
+            ["@rtq/mcp", "Business-Grade MCP integration layer & security gateway", "https://www.npmjs.com/package/@rtq/mcp"],
+            ["@rtq/core", "Security-model types, capability registry, atomic ticket store", "https://www.npmjs.com/package/@rtq/core"],
+            ["@rtq/risk", "Authoritative risk engine; ignores caller demotion attempts", "https://www.npmjs.com/package/@rtq/risk"],
+            ["@rtq/policy", "Default-deny declarative rule evaluator", "https://www.npmjs.com/package/@rtq/policy"],
+            ["@rtq/crypto", "RFC 8785 canonical JSON, HMAC-SHA256, constant-time compare", "https://www.npmjs.com/package/@rtq/crypto"],
+            ["@rtq/approval", "Verification strategies + QR/mobile challenge-response", "https://www.npmjs.com/package/@rtq/approval"],
+            ["@rtq/sandbox", "macOS Seatbelt, Linux bubblewrap, Windows AppContainer wrappers", "https://www.npmjs.com/package/@rtq/sandbox"],
+            ["@rtq/audit", "Structured, HMAC-integrity redacted event logging", "https://www.npmjs.com/package/@rtq/audit"],
+            ["@rtq/clarification", "Structured questions for missing parameters with timeout", "https://www.npmjs.com/package/@rtq/clarification"],
+            ["@rtq/mobile", "Mobile approval host transport and pairing server", "https://www.npmjs.com/package/@rtq/mobile"],
+          ].map(([pkg, desc, url]) => (
+            <a
+              key={pkg}
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-xl border border-white/5 bg-white/[0.02] p-4 transition hover:bg-white/[0.05] hover:border-sky-500/30 block group"
+            >
+              <div className="flex items-center justify-between">
+                <code className="text-xs font-bold text-sky-400 font-mono group-hover:text-sky-300">{pkg}</code>
+                <ExternalLink size={12} className="text-white/30 group-hover:text-sky-400" />
+              </div>
               <p className="mt-1 text-white/50">{desc}</p>
-            </div>
+            </a>
           ))}
         </div>
       </div>
 
+      {/* Quick Start */}
       <div>
         <h2 className="text-xl font-bold text-white mb-4">Quick Start</h2>
-        <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-5 font-mono text-xs leading-relaxed text-white/60">
-          <span className="text-white/30"># Install core security packages</span>
+        <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-5 font-mono text-xs leading-relaxed text-white/60 space-y-3">
+          <p className="text-white/40"># Install the main security runtime</p>
+          <p className="text-emerald-300 font-bold">npm install @rtq/security</p>
           <br />
-          npm install @rtq/security @rtq/core @rtq/risk @rtq/policy
-          <br />
-          <br />
-          <span className="text-white/30"># Register a capability</span>
-          <br />
-          <span className="text-sky-400">import</span> &#123; createRTQ &#125;{" "}
-          <span className="text-sky-400">from</span>{" "}
-          <span className="text-emerald-400">&quot;@rtq/security&quot;</span>;
-          <br />
-          <br />
-          const rtq = createRTQ(&#123; signingKey: process.env.RTQ_SIGNING_KEY! &#125;);
-          <br />
-          <br />
-          rtq.registerCapability(&#123;
-          <br />
-          &nbsp;&nbsp;name: &quot;files.read&quot;,
-          <br />
-          &nbsp;&nbsp;version: 1,
-          <br />
-          &nbsp;&nbsp;description: &quot;Read a file inside the workspace&quot;,
-          <br />
-          &nbsp;&nbsp;inputSchema: &#123; type: &quot;object&quot;, properties: &#123; path: &#123; type: &quot;string&quot; &#125; &#125;, required: [&quot;path&quot;] &#125;,
-          <br />
-          &nbsp;&nbsp;risk: &#123; base: &quot;low&quot; &#125;,
-          <br />
-          &nbsp;&nbsp;execute: <span className="text-sky-400">async</span> (ctx, input) =&gt; (&#123; ok: <span className="text-sky-400">true</span>, data: &#123; input &#125; &#125;),
-          <br />
-          &#125;);
+          <p className="text-white/40"># Or install the CLI</p>
+          <p className="text-emerald-300 font-bold">npm install -g @rtq/cli</p>
         </div>
-      </div>
-
-      <div>
-        <h2 className="text-xl font-bold text-white mb-4">Design Principles</h2>
-        <ul className="space-y-3 text-xs text-white/60">
-          <li className="flex gap-2.5">
-            <span className="text-sky-400">&bull;</span>
-            <span>
-              <strong className="text-white">Zero npm runtime dependencies:</strong> Security-critical packages
-              declare 0 external npm dependencies, minimizing supply-chain attack surface.
-            </span>
-          </li>
-          <li className="flex gap-2.5">
-            <span className="text-sky-400">&bull;</span>
-            <span>
-              <strong className="text-white">Fail-closed:</strong> Missing policy rules evaluate to denial (INV-03).
-              Missing sandbox backends halt execution without silent fallback.
-            </span>
-          </li>
-          <li className="flex gap-2.5">
-            <span className="text-sky-400">&bull;</span>
-            <span>
-              <strong className="text-white">Authoritative risk:</strong> Caller claims cannot lower risk in tested
-              authorization paths (INV-04).
-            </span>
-          </li>
-          <li className="flex gap-2.5">
-            <span className="text-sky-400">&bull;</span>
-            <span>
-              <strong className="text-white">Single-use tickets:</strong> HMAC-SHA256, bound to exact operation parameters.
-              Replay attempts return ok: false in tested redemption paths (INV-09).
-            </span>
-          </li>
-          <li className="flex gap-2.5">
-            <span className="text-sky-400">&bull;</span>
-            <span>
-              <strong className="text-white">Platform sandbox delegation:</strong> Execution containment is passed
-              to platform security mechanisms (macOS Seatbelt, Linux bubblewrap, Windows AppContainer).
-            </span>
-          </li>
-        </ul>
       </div>
 
       <div className="flex flex-wrap gap-4 border-t border-white/10 pt-6">

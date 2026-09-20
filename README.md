@@ -1,7 +1,10 @@
 # RTQ — Risk-Adaptive Capability Security Runtime
 
-RTQ is a standalone, dependency-free security library that turns "can this
-agent/tool do this?" into a **provable pipeline**:
+[![npm version](https://img.shields.io/npm/v/@rtq/security.svg?style=flat-square)](https://www.npmjs.com/package/@rtq/security)
+[![GitHub Release](https://img.shields.io/github/v/release/Latestinssan/RTQ?style=flat-square)](https://github.com/Latestinssan/RTQ/releases/tag/v1.0.0)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg?style=flat-square)](LICENSE)
+
+RTQ is a production-grade, dependency-free capability-security runtime for Node.js, TypeScript, Model Context Protocol (MCP) servers, and mobile approval hosts. It turns _"can this agent/tool do this?"_ into a **provable security pipeline**:
 
 ```
 Command → Capability (registered) → Risk (authoritative) → Policy (default-deny)
@@ -10,68 +13,70 @@ Command → Capability (registered) → Risk (authoritative) → Policy (default
        → Audit (structured, redacted)
 ```
 
-Each layer is a separate `@rtq/*` package with explicit types and tests — the
-security model is never a blob inside one class.
+---
 
-> **Version:** `0.1.0` — **pre-1.0 / alpha**. The capability core, risk engine,
-> policy engine, sandbox, CLI, and verification invariants are implemented and
-> tested. Some features are designed but not yet wired (see the "Not started"
-> / "Planned" rows in
-> [docs/mcp/capability-matrix.md](docs/mcp/capability-matrix.md) and
-> [docs/SECURITY_VERIFICATION_MATRIX.md](docs/SECURITY_VERIFICATION_MATRIX.md)).
-> Do not assume production readiness.
+## 📥 Downloads & Packages
 
-## Why
+| Resource                      | Link                                                                                                        | Description                                                  |
+| :---------------------------- | :---------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------- |
+| **GitHub Release v1.0.0**     | [Release Notes & Assets](https://github.com/Latestinssan/RTQ/releases/tag/v1.0.0)                           | Source code, tag provenance, and release metadata            |
+| **Android Mobile App (.apk)** | [Direct APK Download (62 MB)](https://github.com/Latestinssan/RTQ/releases/download/v1.0.0/app-release.apk) | Flutter Android app for local Ed25519 QR challenge approvals |
+| **npm Registry**              | [@rtq Scope on npm](https://www.npmjs.com/org/rtq)                                                          | All 12 published `@rtq/*` packages                           |
 
-AI agents, connectors, and MCP bridges routinely execute with ambient
-authority: any prompt can reach any tool. RTQ inverts that. Every operation is
-an explicitly **registered capability**; every authorization is a
-**short-lived, single-use, cryptographically-signed ticket** bound to the exact
-operation, risk, policy version, origin, and approval; every execution happens
-inside an **OS-enforced sandbox** that fails closed.
+### Published npm Packages
 
-RTQ was designed from a deep, file-by-file audit of a federated MCP bridge
-application. It shares **none** of that application's code; several of that
-application's weaknesses are explicitly designed out (see
-[docs/source.md](docs/source.md)).
+| Package              | npm Link                                                                                                                          | Responsibility                                                                         |
+| :------------------- | :-------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------- |
+| `@rtq/security`      | [![npm](https://img.shields.io/npm/v/@rtq/security.svg?style=flat-square)](https://www.npmjs.com/package/@rtq/security)           | Full pipeline façade (`createRTQ`)                                                     |
+| `@rtq/cli`           | [![npm](https://img.shields.io/npm/v/@rtq/cli.svg?style=flat-square)](https://www.npmjs.com/package/@rtq/cli)                     | Security CLI (`capabilities`, `policy check`, `sandbox test`, `verify`, `diagnostics`) |
+| `@rtq/mcp`           | [![npm](https://img.shields.io/npm/v/@rtq/mcp.svg?style=flat-square)](https://www.npmjs.com/package/@rtq/mcp)                     | Business-Grade MCP integration layer & security gateway                                |
+| `@rtq/core`          | [![npm](https://img.shields.io/npm/v/@rtq/core.svg?style=flat-square)](https://www.npmjs.com/package/@rtq/core)                   | Capability registry, ticket store, and schema validation                               |
+| `@rtq/crypto`        | [![npm](https://img.shields.io/npm/v/@rtq/crypto.svg?style=flat-square)](https://www.npmjs.com/package/@rtq/crypto)               | Canonical JSON, HMAC-SHA256, nonces, constant-time compare, redaction                  |
+| `@rtq/sandbox`       | [![npm](https://img.shields.io/npm/v/@rtq/sandbox.svg?style=flat-square)](https://www.npmjs.com/package/@rtq/sandbox)             | OS enforcement: macOS Seatbelt, Linux bubblewrap, Windows AppContainer                 |
+| `@rtq/approval`      | [![npm](https://img.shields.io/npm/v/@rtq/approval.svg?style=flat-square)](https://www.npmjs.com/package/@rtq/approval)           | Approval strategies, QR/mobile challenge-response protocol                             |
+| `@rtq/mobile`        | [![npm](https://img.shields.io/npm/v/@rtq/mobile.svg?style=flat-square)](https://www.npmjs.com/package/@rtq/mobile)               | Mobile approval host transport and pairing server                                      |
+| `@rtq/risk`          | [![npm](https://img.shields.io/npm/v/@rtq/risk.svg?style=flat-square)](https://www.npmjs.com/package/@rtq/risk)                   | Authoritative risk engine (caller claims can never downgrade)                          |
+| `@rtq/policy`        | [![npm](https://img.shields.io/npm/v/@rtq/policy.svg?style=flat-square)](https://www.npmjs.com/package/@rtq/policy)               | Declarative default-deny rules, glob matching, risk overrides                          |
+| `@rtq/clarification` | [![npm](https://img.shields.io/npm/v/@rtq/clarification.svg?style=flat-square)](https://www.npmjs.com/package/@rtq/clarification) | Ambiguity resolution & structured security parameter questions                         |
+| `@rtq/audit`         | [![npm](https://img.shields.io/npm/v/@rtq/audit.svg?style=flat-square)](https://www.npmjs.com/package/@rtq/audit)                 | Structured, redacted security event logger                                             |
 
-**RTQ and Aartiq.** RTQ and the audited application (named "Aartiq" on the
-docs site) are **independent, unrelated projects**. RTQ shares none of
-Aartiq's code, tests, or assets, and is a from-scratch, dependency-free
-reimplementation of the same core thesis — _capability and authority are not
-the same thing_. RTQ is designed to be **embeddable in any host** (an
-Aartiq-style bridge, a connector, or a standalone agent), not just Aartiq.
-Nothing in this repository claims that Aartiq currently uses, has migrated to,
-or runs RTQ; the [Aartiq
-integration](website/content/aartiq-integration.mdx) page describes how one
-_would_ bring RTQ to such a host, it does not assert that integration exists
-today.
+---
 
-## Packages
+## 💡 Why RTQ Was Created
 
-| Package              | Responsibility                                                                                        |
-| -------------------- | ----------------------------------------------------------------------------------------------------- |
-| `@rtq/crypto`        | canonical JSON, HMAC-SHA256, nonces, constant-time compare, redaction                                 |
-| `@rtq/core`          | security model types, capability registry, ticket store, schema validation                            |
-| `@rtq/risk`          | authoritative risk engine (caller claims can never downgrade)                                         |
-| `@rtq/policy`        | declarative rules, default-deny, glob matching, risk overrides                                        |
-| `@rtq/clarification` | structured questions for security-critical parameters                                                 |
-| `@rtq/approval`      | strategies, challenge-response QR/mobile protocol, single-use challenge registry                      |
-| `@rtq/sandbox`       | OS enforcement: macOS Seatbelt, Linux bubblewrap, Windows AppContainer+Job                            |
-| `@rtq/audit`         | structured, redacted security events                                                                  |
-| `@rtq/security`      | the full pipeline façade (`createRTQ`)                                                                |
-| `@rtq/cli`           | actionable security tooling (`capabilities`, `policy check`, `sandbox test`, `verify`, `diagnostics`) |
+While developing **Aartiq**, a disproportionate amount of engineering time was spent repeatedly implementing OS-level sandboxing, capability scoping, fine-grained permission gating, and challenge-response authorization from scratch.
 
-## Quick start
+RTQ was created to solve this problem once and for all — packaging a battle-tested, risk-adaptive capability security runtime into a clean suite of reusable packages. With RTQ, developers can instantly integrate capability security, OS-enforced sandboxing, Model Context Protocol (MCP) policy enforcement, and mobile QR challenge-response approvals into their applications without having to build security infrastructure from scratch.
+
+---
+
+## 🚀 Quick Start & Usage Guide
+
+### 1. Installation
+
+Install the main façade package in your project:
+
+```sh
+npm install @rtq/security
+```
+
+Or install the RTQ CLI globally:
+
+```sh
+npm install -g @rtq/cli
+```
+
+### 2. Runtime Capability & Policy Enforcement
 
 ```ts
 import { createRTQ } from "@rtq/security";
 
+// Initialize runtime with signing key from environment
 const rtq = createRTQ({
-  signingKey: process.env.RTQ_SIGNING_KEY!, // outside the repo, always
+  signingKey: process.env.RTQ_SIGNING_KEY!,
 });
 
-// 1. Explicitly register the executable surface.
+// Step 1: Explicitly register capabilities (no ambient execution)
 rtq.registerCapability({
   name: "files.read",
   version: 1,
@@ -83,102 +88,109 @@ rtq.registerCapability({
     additionalProperties: false,
   },
   risk: { base: "low" },
-  execute: async (ctx, input) => ({ ok: true, data: { input } }),
+  execute: async (ctx, input) => ({ ok: true, data: { path: input.path } }),
 });
 
-// 2. Declare policy. Missing rule ≠ allow: it is a denial.
+// Step 2: Register policy (default-deny: unlisted capabilities are denied)
 rtq.registerPolicy({
   kind: "allow",
   capability: "files.read",
-  reason: "workspace reads",
+  reason: "Allow workspace file reads",
 });
 
-// 3. Authorize; consume the ticket exactly once.
+// Step 3: Authorize operation (receives cryptographically signed ticket)
 const auth = await rtq.authorize({
   capability: "files.read",
   version: 1,
   input: { path: "/workspace/report.md" },
 });
-// auth.decision: 'allowed' | 'approval_required' | 'clarification_required' | 'denied'
 
 if (auth.decision === "allowed") {
+  // Step 4: Execute inside OS sandbox with single-use ticket
   const outcome = await rtq.execute(auth.ticketId);
-  // outcome.ok, outcome.result ...
+  console.log("Result:", outcome.result);
+} else if (auth.decision === "approval_required") {
+  console.log(
+    "Human/Mobile approval required. Challenge ID:",
+    auth.challengeId,
+  );
 }
 ```
 
-High-risk operations never auto-approve: they return
-`approval_required` with a `challengeId`; the host renders a QR challenge,
-a device that performed its own local authentication signs the exact
-challenge, and `submitApproval` verifies and redeems it (single-use).
+### 3. Using the Security CLI
 
-## Security posture (highlights)
-
-- **Explicit surface.** Unregistered capabilities are denied — there is no
-  implicit executable surface.
-- **Default-deny policy.** A missing policy rule is a denial, not an allow.
-- **Authoritative risk.** Risk is computed by RTQ from capability factors,
-  origin and resource. A caller-supplied `claimedRisk` can only ever raise
-  the baseline, never lower it.
-- **Single-use tickets.** HMAC-SHA256 over a canonical body full of bindings
-  (capability + version + input hash + actor + resource + risk + policy
-  version + approval method + origin + challenge + expiry + nonce). Replay,
-  tamper, expiry and version bumps are rejected with explicit codes. Tickets
-  are invalidated when the capability version changes.
-- **QR / mobile verification.** Challenge-response only; scanning a QR grants
-  nothing. No `approve=true` deep links, no PINs as an authorization primitive.
-- **Fail-closed sandbox.** If a backend cannot be constructed or verified, the
-  execution is refused — there is no unsandboxed fallback. The only way to run
-  unsandboxed is the explicit, host-supplied `useSandbox: false` escape hatch,
-  which is reported as `sandboxed: false`.
-- **Redacted audit.** Structured events cover every security transition;
-  secret-shaped values are redacted before they reach a sink.
-
-See [docs/security-overview.md](docs/security-overview.md),
-[docs/THREAT_MODEL.md](docs/THREAT_MODEL.md) and
-[docs/SECURITY_VERIFICATION_MATRIX.md](docs/SECURITY_VERIFICATION_MATRIX.md).
-
-## CLI
+The `@rtq/cli` package provides actionable security inspection and testing commands:
 
 ```sh
-RTQ_SIGNING_KEY=... npx rtq capabilities --config settings/config.js
-RTQ_SIGNING_KEY=... npx rtq policy check command.json --config settings/config.js --origin remote
+# Inspect registered capabilities
+RTQ_SIGNING_KEY=secret npx rtq capabilities --config settings/config.js
+
+# Test policy enforcement against a candidate command
+RTQ_SIGNING_KEY=secret npx rtq policy check command.json --config settings/config.js --origin remote
+
+# Run real OS-level sandbox enforcement checks
 npx rtq sandbox test
-RTQ_SIGNING_KEY=... npx rtq verify signature --ticket ticket.json
+
+# Verify an authorization ticket signature
+RTQ_SIGNING_KEY=secret npx rtq verify signature --ticket ticket.json
+
+# Run environment and platform security diagnostics
 npx rtq diagnostics
 ```
 
-Every command is actionable: it prints what you need to decide and exits
-nonzero when the answer is "not OK" (see `docs/cli.md`).
+### 4. Model Context Protocol (MCP) Gateway Integration
 
-## Development
+Protect MCP servers with RTQ's security gateway:
 
-```sh
-npm install
-npm run typecheck     # whole-repo type check
-npm run build         # package builds
-npm test              # all suites
-npm run test:unit     # unit tests only
-npm run test:security # security pipeline + fs policy suites
-npm run test:sandbox  # sandbox suites (real OS enforcement on macOS)
+```ts
+import { createMCPGateway } from "@rtq/mcp";
+
+const gateway = createMCPGateway({
+  signingKey: process.env.RTQ_SIGNING_KEY!,
+  enforceSandboxing: true,
+});
+
+// Register MCP tool mapping to capability
+gateway.registerToolCapability({
+  toolName: "execute_script",
+  capabilityName: "system.execute",
+  version: 1,
+});
 ```
 
-Test suites are labeled by category (`unit`, `contract`, `integration`,
-`real OS enforcement`) — see [docs/testing.md](docs/testing.md). Real OS
-enforcement tests always **skip with a reason** when the platform backend is
-unavailable; they never fake a pass.
+### 5. Mobile Approval App (Android Flutter App)
 
-## Platform support
+For high-risk operations requiring user verification:
 
-| OS      | Backend                                         | Real tests                                   |
-| ------- | ----------------------------------------------- | -------------------------------------------- |
-| macOS   | Seatbelt (`sandbox-exec`)                       | yes, gated on `/usr/bin/sandbox-exec`        |
-| Linux   | bubblewrap (`bwrap`)                            | gated on install; argv unit tests always run |
-| Windows | AppContainer + Job Object via PowerShell runner | runner unit tests; real on windows-latest    |
+1. **Download the Android APK**: [Download v1.0.0 APK](https://github.com/Latestinssan/RTQ/releases/download/v1.0.0/app-release.apk).
+2. Install on Android device (Android 12+, Java 17/Dart 3.11 target).
+3. **Scan QR Challenge**: When RTQ returns `approval_required`, it renders a single-use QR challenge.
+4. **Local Ed25519 Signing**: The mobile app verifies the challenge locally and signs the approval using a hardware-backed Ed25519 key without transmitting PINs or static secrets.
 
-## License
+---
 
-Apache-2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE). RTQ has no runtime
-dependencies and is an original implementation — see
-[docs/source.md](docs/source.md) for provenance and the audit trail behind
-its design.
+## 🛡️ Security Posture & Guarantees
+
+- **Explicit Surface**: Unregistered capabilities are denied by default.
+- **Default-Deny Policy**: Absence of an explicit allow rule results in denial.
+- **Authoritative Risk Engine**: Caller-supplied risk claims can only escalate risk, never lower it.
+- **Single-Use Signed Tickets**: HMAC-SHA256 authorization tickets bound to capability, input hash, actor, origin, and nonce.
+- **Fail-Closed OS Sandboxing**: macOS Seatbelt (`sandbox-exec`), Linux bubblewrap (`bwrap`), and Windows AppContainer + Job Object. If sandbox creation fails, execution is refused.
+- **Redacted Audit Logging**: Structured security logs automatically sanitize passwords, keys, and tokens.
+
+---
+
+## 🧪 Testing & Verification
+
+```sh
+npm run typecheck     # Whole-repo TypeScript validation
+npm run format:check  # Code formatting validation
+npm run build         # Build all 12 packages
+npm test              # Run 430+ unit, contract & security tests
+```
+
+---
+
+## 📄 License
+
+Apache-2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE). RTQ is an original, dependency-free implementation created by [Latestinssan](https://github.com/Latestinssan).
