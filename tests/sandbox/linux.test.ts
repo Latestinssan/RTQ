@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { describe, expect, it, beforeAll, afterAll } from "vitest";
 import fs from "fs";
 import os from "os";
 import path from "path";
@@ -7,6 +7,12 @@ import {
   canonicalizePath,
   checkBwrapCapability,
 } from "@rtq/sandbox";
+
+const hasLinuxFs = fs.existsSync("/usr") && fs.existsSync("/etc");
+
+function describeMaybe(name: string, fn: () => void) {
+  hasLinuxFs ? describe(name, fn) : describe.skip(name, fn);
+}
 
 const workspace = path.join(os.tmpdir(), `rtq-linux-arg-test-${process.pid}`);
 
@@ -18,7 +24,7 @@ afterAll(() => {
   fs.rmSync(workspace, { recursive: true, force: true });
 });
 
-describe("buildBubblewrapArgs (Linux)", () => {
+describeMaybe("buildBubblewrapArgs (Linux)", () => {
   const spec = {
     filesystem: {
       read: ["/usr", "/etc"],
@@ -75,7 +81,7 @@ describe("buildBubblewrapArgs (Linux)", () => {
   });
 });
 
-describe("checkBwrapCapability", () => {
+describeMaybe("checkBwrapCapability", () => {
   it("returns a boolean availability probe without throwing", () => {
     const result = checkBwrapCapability("bwrap");
     expect(typeof result).toBe("boolean");
