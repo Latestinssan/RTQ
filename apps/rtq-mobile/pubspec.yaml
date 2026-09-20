@@ -1,0 +1,35 @@
+name: rtq_mobile
+description: "RTQ Mobile Approval — scan an RTQ challenge, verify it locally, and sign an approval with a device-held Ed25519 key. This app is NOT the authorization authority; the RTQ host independently verifies every approval."
+publish_to: "none"
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.11.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # Canonical SHA-256 / digest helpers for the protocol core.
+  crypto: ^3.0.7
+  # Ed25519 signing + PBKDF2 + AES-GCM for the PIN-wrapped device key.
+  cryptography: ^2.7.0
+  # Platform keystore/Keychain-backed storage for the wrapped device key.
+  flutter_secure_storage: ^9.2.4
+  # Optional biometric user-verification gate.
+  local_auth: ^2.3.0
+  # Camera QR scanning. The protocol still validates every scanned payload.
+  mobile_scanner: ^5.2.3
+  # Rendering pairing/challenge QR codes on the host demo screen.
+  qr_flutter: ^4.1.0
+  # Approval-result transport (never used to carry secrets).
+  http: ^1.6.0
+  # Stable identifiers for local records (not security material).
+  uuid: ^4.5.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true

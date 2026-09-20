@@ -1,0 +1,223 @@
+{
+  "protocol": "rtq-approval-v1",
+  "version": 1,
+  "description": "Shared cross-implementation test vectors. Keys are TEST-ONLY and public on purpose. Canonical bodies are produced by canonicalStringify (recursively sorted keys, no whitespace).",
+  "canonicalStringifyExamples": [
+    {
+      "input": {
+        "b": 1,
+        "a": 2
+      },
+      "canonical": "{\"a\":2,\"b\":1}"
+    },
+    {
+      "input": {
+        "z": [
+          3,
+          {
+            "y": true,
+            "x": null
+          }
+        ],
+        "a": "s"
+      },
+      "canonical": "{\"a\":\"s\",\"z\":[3,{\"x\":null,\"y\":true}]}"
+    }
+  ],
+  "keys": {
+    "host": {
+      "publicKeyJwk": {
+        "kty": "OKP",
+        "crv": "Ed25519",
+        "x": "xDhAR4IIP4BouF41cOi_LJQJX_YifRdQF1MJ9_LkXqc"
+      },
+      "privateKeyJwk": {
+        "kty": "OKP",
+        "crv": "Ed25519",
+        "x": "xDhAR4IIP4BouF41cOi_LJQJX_YifRdQF1MJ9_LkXqc",
+        "d": "eDvT4LOxBIdnkXJuHjc2iYUcSCNUeDQpJ-rWw-kC4vo"
+      }
+    },
+    "deviceA": {
+      "publicKeyJwk": {
+        "kty": "OKP",
+        "crv": "Ed25519",
+        "x": "VI-HBNTuwjVznOo-e83neLjVtc_Vbl-EC3iFIfzE4SA"
+      },
+      "privateKeyJwk": {
+        "kty": "OKP",
+        "crv": "Ed25519",
+        "x": "VI-HBNTuwjVznOo-e83neLjVtc_Vbl-EC3iFIfzE4SA",
+        "d": "8gpQ-EtnQ0xDGfqA8-EgxP1KWIBYnXx8TAB8j4OD9-4"
+      }
+    },
+    "deviceB": {
+      "publicKeyJwk": {
+        "kty": "OKP",
+        "crv": "Ed25519",
+        "x": "fdX7SG_-UUrpIvQfIOQ_HC2reZ_XHPEsmOS3od6TNmE"
+      },
+      "privateKeyJwk": {
+        "kty": "OKP",
+        "crv": "Ed25519",
+        "x": "fdX7SG_-UUrpIvQfIOQ_HC2reZ_XHPEsmOS3od6TNmE",
+        "d": "SL7-8vYFwP9ocYS02eWvpoDGjlBZr_PvnSveyaGgsb0"
+      }
+    }
+  },
+  "challenge": {
+    "unsigned": {
+      "protocol": "rtq-approval-v1",
+      "version": 1,
+      "kind": "challenge",
+      "challengeId": "11111111-1111-4111-8111-111111111111",
+      "capability": "files.delete",
+      "capabilityVersion": 1,
+      "inputHash": "2c98b3df041868746630bda0015a842d0df6a47168a98943b2eb4911fbf67e8b",
+      "summary": {
+        "action": "Delete file",
+        "path": "/workspace/secret.txt",
+        "reversible": false
+      },
+      "risk": "high",
+      "policyVersion": "policy-v3",
+      "origin": "local",
+      "application": "RTQ Desktop",
+      "hostId": "rtq-host-01",
+      "hostPublicKey": "xDhAR4IIP4BouF41cOi_LJQJX_YifRdQF1MJ9_LkXqc",
+      "expiresAt": 1750000300000,
+      "nonce": "0123456789abcdef0123456789abcdef"
+    },
+    "signed": {
+      "protocol": "rtq-approval-v1",
+      "version": 1,
+      "kind": "challenge",
+      "challengeId": "11111111-1111-4111-8111-111111111111",
+      "capability": "files.delete",
+      "capabilityVersion": 1,
+      "inputHash": "2c98b3df041868746630bda0015a842d0df6a47168a98943b2eb4911fbf67e8b",
+      "summary": {
+        "action": "Delete file",
+        "path": "/workspace/secret.txt",
+        "reversible": false
+      },
+      "risk": "high",
+      "policyVersion": "policy-v3",
+      "origin": "local",
+      "application": "RTQ Desktop",
+      "hostId": "rtq-host-01",
+      "hostPublicKey": "xDhAR4IIP4BouF41cOi_LJQJX_YifRdQF1MJ9_LkXqc",
+      "expiresAt": 1750000300000,
+      "nonce": "0123456789abcdef0123456789abcdef",
+      "hostSignature": "dccc52cb1760788a571cf19299620f845e43efdc4e89dc7fe30d9f4262731311915fbfd84cac6e6c15dd38392f55abab4635a3e35cb6d60b9d2718ab6ba81b0b"
+    },
+    "signingBody": "{\"application\":\"RTQ Desktop\",\"capability\":\"files.delete\",\"capabilityVersion\":1,\"challengeId\":\"11111111-1111-4111-8111-111111111111\",\"expiresAt\":1750000300000,\"hostId\":\"rtq-host-01\",\"hostPublicKey\":\"xDhAR4IIP4BouF41cOi_LJQJX_YifRdQF1MJ9_LkXqc\",\"inputHash\":\"2c98b3df041868746630bda0015a842d0df6a47168a98943b2eb4911fbf67e8b\",\"kind\":\"challenge\",\"nonce\":\"0123456789abcdef0123456789abcdef\",\"origin\":\"local\",\"policyVersion\":\"policy-v3\",\"protocol\":\"rtq-approval-v1\",\"risk\":\"high\",\"summary\":{\"action\":\"Delete file\",\"path\":\"/workspace/secret.txt\",\"reversible\":false},\"version\":1}",
+    "hostSignature": "dccc52cb1760788a571cf19299620f845e43efdc4e89dc7fe30d9f4262731311915fbfd84cac6e6c15dd38392f55abab4635a3e35cb6d60b9d2718ab6ba81b0b",
+    "qrPayload": "rtq://challenge?v=1&c=eyJhcHBsaWNhdGlvbiI6IlJUUSBEZXNrdG9wIiwiY2FwYWJpbGl0eSI6ImZpbGVzLmRlbGV0ZSIsImNhcGFiaWxpdHlWZXJzaW9uIjoxLCJjaGFsbGVuZ2VJZCI6IjExMTExMTExLTExMTEtNDExMS04MTExLTExMTExMTExMTExMSIsImV4cGlyZXNBdCI6MTc1MDAwMDMwMDAwMCwiaG9zdElkIjoicnRxLWhvc3QtMDEiLCJob3N0UHVibGljS2V5IjoieERoQVI0SUlQNEJvdUY0MWNPaV9MSlFKWF9ZaWZSZFFGMU1KOV9Ma1hxYyIsImhvc3RTaWduYXR1cmUiOiJkY2NjNTJjYjE3NjA3ODhhNTcxY2YxOTI5OTYyMGY4NDVlNDNlZmRjNGU4OWRjN2ZlMzBkOWY0MjYyNzMxMzExOTE1ZmJmZDg0Y2FjNmU2YzE1ZGQzODM5MmY1NWFiYWI0NjM1YTNlMzVjYjZkNjBiOWQyNzE4YWI2YmE4MWIwYiIsImlucHV0SGFzaCI6IjJjOThiM2RmMDQxODY4NzQ2NjMwYmRhMDAxNWE4NDJkMGRmNmE0NzE2OGE5ODk0M2IyZWI0OTExZmJmNjdlOGIiLCJraW5kIjoiY2hhbGxlbmdlIiwibm9uY2UiOiIwMTIzNDU2Nzg5YWJjZGVmMDEyMzQ1Njc4OWFiY2RlZiIsIm9yaWdpbiI6ImxvY2FsIiwicG9saWN5VmVyc2lvbiI6InBvbGljeS12MyIsInByb3RvY29sIjoicnRxLWFwcHJvdmFsLXYxIiwicmlzayI6ImhpZ2giLCJzdW1tYXJ5Ijp7ImFjdGlvbiI6IkRlbGV0ZSBmaWxlIiwicGF0aCI6Ii93b3Jrc3BhY2Uvc2VjcmV0LnR4dCIsInJldmVyc2libGUiOmZhbHNlfSwidmVyc2lvbiI6MX0"
+  },
+  "approvals": {
+    "granted": {
+      "unsigned": {
+        "protocol": "rtq-approval-v1",
+        "version": 1,
+        "kind": "approval",
+        "challenge": {
+          "challengeId": "11111111-1111-4111-8111-111111111111",
+          "capability": "files.delete",
+          "capabilityVersion": 1,
+          "inputHash": "2c98b3df041868746630bda0015a842d0df6a47168a98943b2eb4911fbf67e8b",
+          "risk": "high",
+          "origin": "local",
+          "application": "RTQ Desktop",
+          "hostId": "rtq-host-01",
+          "policyVersion": "policy-v3",
+          "expiresAt": 1750000300000,
+          "nonce": "0123456789abcdef0123456789abcdef"
+        },
+        "decision": "granted",
+        "deviceId": "f95dbe3083fd842807089d1ffd980c7e7774b13e3bd5352b1e2cedcd8930aca5",
+        "signedAt": 1750000001000
+      },
+      "signature": "fb3a5e7c199e9c7e785d0330beddccc5b0849c593b863f838591ed5f9b053a57b6cd3034144c6eb2d618b56e1d412ef158869afd40f0049870de21664f0d3b04",
+      "signingBody": "{\"challenge\":{\"application\":\"RTQ Desktop\",\"capability\":\"files.delete\",\"capabilityVersion\":1,\"challengeId\":\"11111111-1111-4111-8111-111111111111\",\"expiresAt\":1750000300000,\"hostId\":\"rtq-host-01\",\"inputHash\":\"2c98b3df041868746630bda0015a842d0df6a47168a98943b2eb4911fbf67e8b\",\"nonce\":\"0123456789abcdef0123456789abcdef\",\"origin\":\"local\",\"policyVersion\":\"policy-v3\",\"risk\":\"high\"},\"decision\":\"granted\",\"deviceId\":\"f95dbe3083fd842807089d1ffd980c7e7774b13e3bd5352b1e2cedcd8930aca5\",\"kind\":\"approval\",\"protocol\":\"rtq-approval-v1\",\"signedAt\":1750000001000,\"version\":1}",
+      "json": "{\"challenge\":{\"application\":\"RTQ Desktop\",\"capability\":\"files.delete\",\"capabilityVersion\":1,\"challengeId\":\"11111111-1111-4111-8111-111111111111\",\"expiresAt\":1750000300000,\"hostId\":\"rtq-host-01\",\"inputHash\":\"2c98b3df041868746630bda0015a842d0df6a47168a98943b2eb4911fbf67e8b\",\"nonce\":\"0123456789abcdef0123456789abcdef\",\"origin\":\"local\",\"policyVersion\":\"policy-v3\",\"risk\":\"high\"},\"decision\":\"granted\",\"deviceId\":\"f95dbe3083fd842807089d1ffd980c7e7774b13e3bd5352b1e2cedcd8930aca5\",\"kind\":\"approval\",\"protocol\":\"rtq-approval-v1\",\"signature\":\"fb3a5e7c199e9c7e785d0330beddccc5b0849c593b863f838591ed5f9b053a57b6cd3034144c6eb2d618b56e1d412ef158869afd40f0049870de21664f0d3b04\",\"signedAt\":1750000001000,\"version\":1}"
+    },
+    "denied": {
+      "unsigned": {
+        "protocol": "rtq-approval-v1",
+        "version": 1,
+        "kind": "approval",
+        "challenge": {
+          "challengeId": "11111111-1111-4111-8111-111111111111",
+          "capability": "files.delete",
+          "capabilityVersion": 1,
+          "inputHash": "2c98b3df041868746630bda0015a842d0df6a47168a98943b2eb4911fbf67e8b",
+          "risk": "high",
+          "origin": "local",
+          "application": "RTQ Desktop",
+          "hostId": "rtq-host-01",
+          "policyVersion": "policy-v3",
+          "expiresAt": 1750000300000,
+          "nonce": "0123456789abcdef0123456789abcdef"
+        },
+        "decision": "denied",
+        "deviceId": "571fab4093c51c4fb320441b1c7181e8b2218ee263ac9cba095f19d24a9c0a54",
+        "signedAt": 1750000001000
+      },
+      "signature": "06cd85d691dad09caf2f4c2dd7a4e8ba475ab4607e6c37e7322fc101dafa6bd947ad53903495eaadec19e704e160b7505450eb79dc4efde4e007687fd3968d0c",
+      "signingBody": "{\"challenge\":{\"application\":\"RTQ Desktop\",\"capability\":\"files.delete\",\"capabilityVersion\":1,\"challengeId\":\"11111111-1111-4111-8111-111111111111\",\"expiresAt\":1750000300000,\"hostId\":\"rtq-host-01\",\"inputHash\":\"2c98b3df041868746630bda0015a842d0df6a47168a98943b2eb4911fbf67e8b\",\"nonce\":\"0123456789abcdef0123456789abcdef\",\"origin\":\"local\",\"policyVersion\":\"policy-v3\",\"risk\":\"high\"},\"decision\":\"denied\",\"deviceId\":\"571fab4093c51c4fb320441b1c7181e8b2218ee263ac9cba095f19d24a9c0a54\",\"kind\":\"approval\",\"protocol\":\"rtq-approval-v1\",\"signedAt\":1750000001000,\"version\":1}",
+      "json": "{\"challenge\":{\"application\":\"RTQ Desktop\",\"capability\":\"files.delete\",\"capabilityVersion\":1,\"challengeId\":\"11111111-1111-4111-8111-111111111111\",\"expiresAt\":1750000300000,\"hostId\":\"rtq-host-01\",\"inputHash\":\"2c98b3df041868746630bda0015a842d0df6a47168a98943b2eb4911fbf67e8b\",\"nonce\":\"0123456789abcdef0123456789abcdef\",\"origin\":\"local\",\"policyVersion\":\"policy-v3\",\"risk\":\"high\"},\"decision\":\"denied\",\"deviceId\":\"571fab4093c51c4fb320441b1c7181e8b2218ee263ac9cba095f19d24a9c0a54\",\"kind\":\"approval\",\"protocol\":\"rtq-approval-v1\",\"signature\":\"06cd85d691dad09caf2f4c2dd7a4e8ba475ab4607e6c37e7322fc101dafa6bd947ad53903495eaadec19e704e160b7505450eb79dc4efde4e007687fd3968d0c\",\"signedAt\":1750000001000,\"version\":1}"
+    }
+  },
+  "pairing": {
+    "unsigned": {
+      "protocol": "rtq-approval-v1",
+      "version": 1,
+      "kind": "pairing",
+      "pairingId": "22222222-2222-4222-8222-222222222222",
+      "hostId": "rtq-host-01",
+      "hostPublicKey": "xDhAR4IIP4BouF41cOi_LJQJX_YifRdQF1MJ9_LkXqc",
+      "application": "RTQ Desktop",
+      "expiresAt": 1750000120000,
+      "nonce": "fedcba9876543210fedcba9876543210",
+      "userHint": "Pair with RTQ Desktop on build-01"
+    },
+    "signed": {
+      "protocol": "rtq-approval-v1",
+      "version": 1,
+      "kind": "pairing",
+      "pairingId": "22222222-2222-4222-8222-222222222222",
+      "hostId": "rtq-host-01",
+      "hostPublicKey": "xDhAR4IIP4BouF41cOi_LJQJX_YifRdQF1MJ9_LkXqc",
+      "application": "RTQ Desktop",
+      "expiresAt": 1750000120000,
+      "nonce": "fedcba9876543210fedcba9876543210",
+      "userHint": "Pair with RTQ Desktop on build-01",
+      "hostSignature": "a271c385405db005fda1d93979ccf0444498a1c239cd8ea64bbecf9ef3cc5bcc68a7dccc2506c0aae72f976bc7399eadd4dd435d0648e7fc285d0784c86b4e01"
+    },
+    "signingBody": "{\"application\":\"RTQ Desktop\",\"expiresAt\":1750000120000,\"hostId\":\"rtq-host-01\",\"hostPublicKey\":\"xDhAR4IIP4BouF41cOi_LJQJX_YifRdQF1MJ9_LkXqc\",\"kind\":\"pairing\",\"nonce\":\"fedcba9876543210fedcba9876543210\",\"pairingId\":\"22222222-2222-4222-8222-222222222222\",\"protocol\":\"rtq-approval-v1\",\"userHint\":\"Pair with RTQ Desktop on build-01\",\"version\":1}",
+    "hostSignature": "a271c385405db005fda1d93979ccf0444498a1c239cd8ea64bbecf9ef3cc5bcc68a7dccc2506c0aae72f976bc7399eadd4dd435d0648e7fc285d0784c86b4e01",
+    "qrPayload": "rtq://pair?v=1&c=eyJhcHBsaWNhdGlvbiI6IlJUUSBEZXNrdG9wIiwiZXhwaXJlc0F0IjoxNzUwMDAwMTIwMDAwLCJob3N0SWQiOiJydHEtaG9zdC0wMSIsImhvc3RQdWJsaWNLZXkiOiJ4RGhBUjRJSVA0Qm91RjQxY09pX0xKUUpYX1lpZlJkUUYxTUo5X0xrWHFjIiwiaG9zdFNpZ25hdHVyZSI6ImEyNzFjMzg1NDA1ZGIwMDVmZGExZDkzOTc5Y2NmMDQ0NDQ5OGExYzIzOWNkOGVhNjRiYmVjZjllZjNjYzViY2M2OGE3ZGNjYzI1MDZjMGFhZTcyZjk3NmJjNzM5OWVhZGQ0ZGQ0MzVkMDY0OGU3ZmMyODVkMDc4NGM4NmI0ZTAxIiwia2luZCI6InBhaXJpbmciLCJub25jZSI6ImZlZGNiYTk4NzY1NDMyMTBmZWRjYmE5ODc2NTQzMjEwIiwicGFpcmluZ0lkIjoiMjIyMjIyMjItMjIyMi00MjIyLTgyMjItMjIyMjIyMjIyMjIyIiwicHJvdG9jb2wiOiJydHEtYXBwcm92YWwtdjEiLCJ1c2VySGludCI6IlBhaXIgd2l0aCBSVFEgRGVza3RvcCBvbiBidWlsZC0wMSIsInZlcnNpb24iOjF9",
+    "response": {
+      "unsigned": {
+        "protocol": "rtq-approval-v1",
+        "version": 1,
+        "kind": "pairing_response",
+        "pairingId": "22222222-2222-4222-8222-222222222222",
+        "hostId": "rtq-host-01",
+        "nonce": "fedcba9876543210fedcba9876543210",
+        "deviceId": "f95dbe3083fd842807089d1ffd980c7e7774b13e3bd5352b1e2cedcd8930aca5",
+        "deviceName": "Test iPhone",
+        "publicKeyJwk": {
+          "kty": "OKP",
+          "crv": "Ed25519",
+          "x": "VI-HBNTuwjVznOo-e83neLjVtc_Vbl-EC3iFIfzE4SA"
+        },
+        "signedAt": 1750000000500
+      },
+      "deviceSignature": "ad2a9abae40e4f50c2bde577eb4c4ee7ff76536b2957d93eadee476a83e4d6d23d9a4235ab01bcb0de3b1f5030aeea182af25cd6ad4b4398ca175eab9a6dc20f",
+      "signingBody": "{\"deviceId\":\"f95dbe3083fd842807089d1ffd980c7e7774b13e3bd5352b1e2cedcd8930aca5\",\"deviceName\":\"Test iPhone\",\"hostId\":\"rtq-host-01\",\"kind\":\"pairing_response\",\"nonce\":\"fedcba9876543210fedcba9876543210\",\"pairingId\":\"22222222-2222-4222-8222-222222222222\",\"protocol\":\"rtq-approval-v1\",\"publicKeyJwk\":{\"crv\":\"Ed25519\",\"kty\":\"OKP\",\"x\":\"VI-HBNTuwjVznOo-e83neLjVtc_Vbl-EC3iFIfzE4SA\"},\"signedAt\":1750000000500,\"version\":1}",
+      "json": "{\"deviceId\":\"f95dbe3083fd842807089d1ffd980c7e7774b13e3bd5352b1e2cedcd8930aca5\",\"deviceName\":\"Test iPhone\",\"deviceSignature\":\"ad2a9abae40e4f50c2bde577eb4c4ee7ff76536b2957d93eadee476a83e4d6d23d9a4235ab01bcb0de3b1f5030aeea182af25cd6ad4b4398ca175eab9a6dc20f\",\"hostId\":\"rtq-host-01\",\"kind\":\"pairing_response\",\"nonce\":\"fedcba9876543210fedcba9876543210\",\"pairingId\":\"22222222-2222-4222-8222-222222222222\",\"protocol\":\"rtq-approval-v1\",\"publicKeyJwk\":{\"crv\":\"Ed25519\",\"kty\":\"OKP\",\"x\":\"VI-HBNTuwjVznOo-e83neLjVtc_Vbl-EC3iFIfzE4SA\"},\"signedAt\":1750000000500,\"version\":1}"
+    }
+  }
+}
