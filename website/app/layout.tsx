@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
-import { Head } from "nextra/components";
+import { Layout } from "nextra-theme-docs";
 import { getPageMap } from "nextra/page-map";
-import { ManualLayout } from "./manual-layout";
 import "nextra-theme-docs/style.css";
 
 export const metadata = {
@@ -9,6 +8,8 @@ export const metadata = {
   description:
     "Dependency-free capability-security runtime. Every operation is an explicitly registered capability; every authorization is a short-lived, single-use, cryptographically-signed ticket.",
 };
+
+export const dynamic = "force-dynamic";
 
 export default async function RootLayout({
   children,
@@ -18,9 +19,13 @@ export default async function RootLayout({
   const pageMap = await getPageMap();
   return (
     <html lang="en" dir="ltr" suppressHydrationWarning>
-      <Head />
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </head>
       <body>
-        <ManualLayout pageMap={pageMap}>{children}</ManualLayout>
+        <Layout pageMap={pageMap} docsRepositoryBase="https://github.com/Latestinssan/RTQ/tree/main/website">
+          {children}
+        </Layout>
       </body>
     </html>
   );

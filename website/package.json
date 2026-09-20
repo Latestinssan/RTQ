@@ -5,6 +5,7 @@
   "description": "RTQ documentation site (Nextra).",
   "license": "Apache-2.0",
   "scripts": {
+    "postinstall": "node patch-nextra.js",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
