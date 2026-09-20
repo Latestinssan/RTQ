@@ -1,0 +1,24 @@
+{
+  "name": "@rtq/security",
+  "version": "0.1.0",
+  "description": "RTQ umbrella package: capability authorization, risk-aware policy, clarification, approvals (incl. QR/mobile verification), cryptographic authorization tickets, OS sandboxing and audit — one ergonomic API.",
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b tsconfig.json"
+  },
+  "dependencies": {
+    "@rtq/approval": "0.1.0",
+    "@rtq/audit": "0.1.0",
+    "@rtq/clarification": "0.1.0",
+    "@rtq/core": "0.1.0",
+    "@rtq/crypto": "0.1.0",
+    "@rtq/policy": "0.1.0",
+    "@rtq/risk": "0.1.0",
+    "@rtq/sandbox": "0.1.0"
+  }
+}

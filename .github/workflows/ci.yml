@@ -1,0 +1,41 @@
+name: CI — typecheck, format, unit tests, build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: "unit + build (${{ matrix.os }})"
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+        name: "tsc --noEmit (repo)"
+      - run: npm run format:check
+        name: "format:check (prettier)"
+      - run: npm run test:unit
+        name: "unit tests"
+      - run: npm run test:security
+        name: "security pipeline tests"
+      - run: npm run test:fs
+        name: "filesystem policy tests"
+      - run: npm run test:cli
+        name: "CLI tests"
+      - run: npm run build
+        name: "build (tsc --build tsconfig.build.json)"

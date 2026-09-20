@@ -1,0 +1,40 @@
+# Threat model
+
+The full, source-linked threat model lives in
+[`docs/THREAT_MODEL.md`](https://github.com/example/rtq/blob/main/docs/THREAT_MODEL.md).
+This page is the summary.
+
+## Trust boundaries
+
+The caller, the command payload, and any content it carries are
+**untrusted**. The host that configures RTQ (capabilities, policy, approval
+providers, keys) is **trusted**.
+
+## Threats and their mitigation
+
+| Threat                                              | Mitigation                                              |
+| --------------------------------------------------- | ------------------------------------------------------- |
+| T1 executing an unregistered operation              | explicit registry; deny unknown names/versions          |
+| T2 missing policy treated as allow                  | `defaultMode ?? "deny"`                                 |
+| T3 caller downgrades risk                           | authoritative risk; claims only raise                   |
+| T4 input substitution after authorization           | input frozen + hashed into the signed ticket body       |
+| T5 ticket replay / tamper / expiry / version change | atomic synchronous redemption, signature, invalidation  |
+| T6 approval substitution                            | challenge binding checks before finalizing              |
+| T7 QR/replay of approvals                           | challenge-response, single-use, short-lived challenges  |
+| T8 PIN / static deep-link approvals                 | designed out — no PIN path, no `approve=true`           |
+| T9 sandbox bypass / silent fallback                 | fail-closed construction; reported `sandboxed:false`    |
+| T10 secret leakage (env / audit)                    | env allowlist + secret-shape filtering; audit redaction |
+| T11 path traversal / symlink escape                 | canonicalization + separator-aware boundary matching    |
+| T12 audit forgery / unlabelled decisions            | structured name-keyed events for every transition       |
+
+## Honest limitations
+
+- The host is trusted (sandboxing is process-level, not machine-level).
+- `bwrap` is not a root boundary; CI runs unprivileged.
+- macOS `sandbox-exec` is deprecated by Apple; Mach IPC remains default-allowed.
+- Windows AppContainer does not capture target stdout/stderr.
+- RTQ verifies the device signature, not the human behind it.
+
+Every claim above cites exact `file:line` locations in
+[`docs/THREAT_MODEL.md`](https://github.com/example/rtq/blob/main/docs/THREAT_MODEL.md)
+and a verifying test in the [verification matrix](/verification-matrix).

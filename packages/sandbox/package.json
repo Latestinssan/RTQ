@@ -1,0 +1,14 @@
+{
+  "name": "@rtq/sandbox",
+  "version": "0.1.0",
+  "description": "RTQ OS sandbox runtime: Seatbelt (macOS), bubblewrap (Linux), AppContainer+Job Object (Windows), fail-closed, with explicit enforcement reporting.",
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b tsconfig.json"
+  }
+}

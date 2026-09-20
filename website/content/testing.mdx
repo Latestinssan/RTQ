@@ -1,0 +1,37 @@
+# Testing strategy
+
+Full details in [`docs/testing.md`](https://github.com/example/rtq/blob/main/docs/testing.md).
+
+## Labels
+
+| Label                 | Meaning                               | Runs on                                                      |
+| --------------------- | ------------------------------------- | ------------------------------------------------------------ |
+| `unit`                | pure logic in isolation               | every platform                                               |
+| `contract`            | cross-component behavior              | every platform                                               |
+| `integration`         | full pipeline end-to-end              | every platform                                               |
+| `real OS enforcement` | executes an actual OS-sandboxed child | only where the backend exists; otherwise skips with a reason |
+
+## Suite map
+
+| Suite                                 | Label                              | Command                           |
+| ------------------------------------- | ---------------------------------- | --------------------------------- |
+| `tests/unit/*` (9 files)              | unit                               | `npm run test:unit`               |
+| `tests/security/pipeline.test.ts`     | contract + integration             | `npm run test:security`           |
+| `tests/invariants/invariants.test.ts` | integration (12 invariants)        | `npx vitest run tests/invariants` |
+| `tests/fs/path.test.ts`               | unit                               | `npm run test:fs`                 |
+| `tests/sandbox/darwin.test.ts`        | **real OS enforcement** (Seatbelt) | `npm run test:sandbox` on macOS   |
+| `tests/sandbox/linux.test.ts`         | construction (bwrap argv)          | `npm run test:sandbox`            |
+| `tests/sandbox/windows.test.ts`       | unit (runner output + invariants)  | `npm run test:sandbox`            |
+| `tests/cli/cli.test.ts`               | integration (exit codes)           | `npm run test:cli`                |
+
+## Platform gating — never fake a pass
+
+- macOS: Seatbelt tests `describe.skip` when `/usr/bin/sandbox-exec` is
+  absent (reported as skipped, not passed).
+- Linux: bwrap argv unit tests always run; real enforcement on
+  `ubuntu-latest` with bwrap installed.
+- Windows: runner invariants always run; real AppContainer on
+  `windows-latest`.
+
+Every CI workflow prints `rtq diagnostics` (backend presence) + skip counts,
+so a green run is comparable across platforms.

@@ -1,0 +1,17 @@
+{
+  "name": "@rtq/policy",
+  "version": "0.1.0",
+  "description": "RTQ policy engine: declarative deny/allow/override/requireApproval/requireVerification/requireClarification rules with secure deny-by-default semantics.",
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b tsconfig.json"
+  },
+  "dependencies": {
+    "@rtq/core": "0.1.0"
+  }
+}

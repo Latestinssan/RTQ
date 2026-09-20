@@ -1,0 +1,27 @@
+{
+  "name": "rtq-docs",
+  "version": "0.1.0",
+  "private": true,
+  "description": "RTQ documentation site (Nextra).",
+  "license": "Apache-2.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "format": "prettier --write \"**/*.{ts,tsx,mdx,json}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,mdx,json}\""
+  },
+  "dependencies": {
+    "next": "^15.3.3",
+    "nextra": "^3.5.0",
+    "nextra-theme-docs": "^3.5.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.1.0",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.2"
+  }
+}

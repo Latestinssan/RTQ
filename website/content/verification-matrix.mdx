@@ -1,0 +1,49 @@
+# Security verification matrix
+
+The full matrix lives in
+[`docs/SECURITY_VERIFICATION_MATRIX.md`](https://github.com/example/rtq/blob/main/docs/SECURITY_VERIFICATION_MATRIX.md).
+Every claim is honest: `verified` (a test proves it), `verified (gated)`
+(proves it only when the OS backend is present), or `construction only`
+(checks the enforcement layer, not the OS).
+
+## The twelve automated invariants
+
+Encoded in `tests/invariants/invariants.test.ts`, run in CI on every platform.
+
+| #   | Invariant                                                          |
+| --- | ------------------------------------------------------------------ |
+| I1  | Unregistered capability denied (no implicit surface)               |
+| I2  | Version mismatch denied                                            |
+| I3  | Missing policy rule ≠ allow (default deny)                         |
+| I4  | Caller-claimed low risk never downgrades                           |
+| I5  | Origin is a hint; `unknown` is never local and escalates           |
+| I6  | High/critical risk never automatically approved                    |
+| I7  | Sandbox network default deny; unenforceable allowlist refused      |
+| I8  | Sandboxed process never inherits ambient secrets via env           |
+| I9  | Tickets single-use; replay denied                                  |
+| I10 | Ticket tamper/replay resistant at the cryptogram level             |
+| I11 | Replacing a capability invalidates outstanding tickets             |
+| I12 | Approval substitution rejected (approval for A cannot authorize B) |
+
+## Highlights
+
+- **Real macOS Seatbelt enforcement** (write denial, network deny, env
+  sanitization, escape-hatch reporting, fail-closed) — `tests/sandbox/darwin.test.ts`,
+  gated on `/usr/bin/sandbox-exec`.
+- **Linux bwrap** — argv construction + fail-closed allowlist refusal
+  (`tests/sandbox/linux.test.ts`), real enforcement on `ubuntu-latest`.
+- **Windows runner** — honest `sandboxed`/`jobAssigned`/`appContainer`
+  reporting invariants (`tests/sandbox/windows.test.ts`).
+- **CLI exit codes** (0/2/3/4) and tampered-ticket rejection
+  (`tests/cli/cli.test.ts`).
+
+Run locally:
+
+```sh
+npm run test:unit
+npm run test:security
+npm run test:fs
+npm run test:sandbox
+npm run test:cli
+npx vitest run tests/invariants
+```

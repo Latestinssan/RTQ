@@ -1,0 +1,46 @@
+name: Docs — build site on pushes; deploy only on main
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - "website/**"
+      - "vercel.json"
+  workflow_dispatch:
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+      - name: Install site deps
+        working-directory: website
+        run: npm ci
+      - name: Type-check site
+        working-directory: website
+        run: npx tsc --noEmit
+      - name: Build Nextra docs site
+        working-directory: website
+        run: npm run build
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: "Deploy website/ to Vercel (honest: requires permission config)"
+        run: |
+          echo "Deploy would call: vercel --prod --yes --token \${VERCEL_TOKEN}"
+          echo "VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID must be configured"
+          echo "as repository secrets before a live deploy can run."

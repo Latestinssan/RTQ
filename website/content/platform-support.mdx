@@ -1,0 +1,35 @@
+# Platform support
+
+Full details in [`docs/platform-support.md`](https://github.com/example/rtq/blob/main/docs/platform-support.md).
+
+## Backends
+
+| OS      | Backend                   | Mechanism                              | Default                   |
+| ------- | ------------------------- | -------------------------------------- | ------------------------- |
+| macOS   | Seatbelt                  | `sandbox-exec` with generated profiles | enforced                  |
+| Linux   | bubblewrap (`bwrap`)      | user namespaces, bind mounts, netns    | enforced                  |
+| Windows | AppContainer + Job Object | PowerShell runner                      | enforced                  |
+| other   | none                      | `NO_ISOLATION` report                  | **refused** (fail-closed) |
+
+## Per-layer enforcement
+
+Each execution returns an `EnforcementReport` naming what was applied
+(`sandboxed`, seatbelt profile / netns / app-container membership, env
+drops), so "sandboxed" always means something specific.
+
+- **macOS:** filesystem read/write/delete allowlists, `network: none` denies
+  sockets (deny wins), process-spawn off by default, env allowlist. Real
+  tests gated on `/usr/bin/sandbox-exec`.
+- **Linux:** new user+pid+net namespaces, ro/rw binds, private `/dev` and
+  `/tmp`; unenforceable allowlists are refused. Real tests on `ubuntu-latest`
+  with bwrap installed.
+- **Windows:** AppContainer + Job Object; success marker requires
+  `sandboxed = $true`, `jobAssigned = $true`, `appContainer = $true`;
+  failure paths never claim isolation.
+
+## Escape hatch and fail-closed
+
+- `useSandbox: false` — explicit, host-supplied, per-execution; reported
+  `sandboxed: false`; never automatic.
+- No backend or unverifiable backend → execution **refused**
+  (`SandboxError`). There is no unsandboxed fallback path.

@@ -1,0 +1,24 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "composite": false,
+    "baseUrl": ".",
+    "paths": {
+      "@rtq/core": ["packages/core/src/index.ts"],
+      "@rtq/crypto": ["packages/crypto/src/index.ts"],
+      "@rtq/audit": ["packages/audit/src/index.ts"],
+      "@rtq/mcp": ["packages/mcp/src/index.ts"],
+      "@rtq/risk": ["packages/risk/src/index.ts"],
+      "@rtq/policy": ["packages/policy/src/index.ts"],
+      "@rtq/clarification": ["packages/clarification/src/index.ts"],
+      "@rtq/approval": ["packages/approval/src/index.ts"],
+      "@rtq/mobile": ["packages/mobile/src/index.ts"],
+      "@rtq/sandbox": ["packages/sandbox/src/index.ts"],
+      "@rtq/security": ["packages/security/src/index.ts"],
+      "@rtq/cli": ["packages/cli/src/index.ts"]
+    }
+  },
+  "include": ["packages/*/src/**/*.ts", "tests/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}

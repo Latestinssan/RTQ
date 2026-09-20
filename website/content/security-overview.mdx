@@ -1,0 +1,100 @@
+# Security overview
+
+See also the repository's [`docs/security-overview.md`](https://github.com/example/rtq/blob/main/docs/security-overview.md).
+
+## The pipeline
+
+```text
+Command            structured { capability, version, input, origin?, metadata? }
+  │
+  ▼
+Capability         explicit registry; unknown name/version → DENY
+  │
+  ▼
+Risk               authoritative, RTQ-computed (caller claims can only raise)
+  │
+  ▼
+Policy             declarative rules; missing rule ≠ allow (default deny)
+  │
+  ▼
+Clarification      security-critical params missing → questions, no authz
+  │
+  ▼
+Approval           automatic / user_confirmation / device_verification(QR) /
+                   biometric; single-use short-lived challenges
+  │
+  ▼
+Ticket             HMAC-SHA256, bound to the operation, single-use
+  │
+  ▼
+Execution          OS sandbox (Seatbelt / bubblewrap / AppContainer+Job)
+  │
+  ▼
+Audit              structured, redacted events for every transition
+```
+
+## Core principles
+
+1. **Explicit surface** — only `registerCapability` results can run.
+2. **Default deny** — missing policy is a denial; deny beats allow.
+3. **Authoritative risk** — RTQ computes risk; caller claims can only raise.
+4. **Origin is a hint** — `remote`/`mobile`/`unknown` escalate; `unknown` is
+   never local.
+5. **Approval escalates with risk** — HIGH/CRITICAL are never automatic.
+6. **Single-use tickets** — one execution per ticket, atomically.
+7. **Fail-closed sandbox** — no sandbox → no execution; `useSandbox: false`
+   is explicit and reported `sandboxed: false`.
+8. **No ambient secrets** — constructed environment; redacted audit.
+
+## Where each principle lives
+
+| Principle                  | Package              | Key file                                                        |
+| -------------------------- | -------------------- | --------------------------------------------------------------- |
+| Model + registry + tickets | `@rtq/core`          | `packages/core/src/{capability-registry,ticket-store,types}.ts` |
+| Risk                       | `@rtq/risk`          | `packages/risk/src/index.ts`                                    |
+| Policy                     | `@rtq/policy`        | `packages/policy/src/index.ts`                                  |
+| Clarification              | `@rtq/clarification` | `packages/clarification/src/index.ts`                           |
+| Approval                   | `@rtq/approval`      | `packages/approval/src/challenge.ts`                            |
+| Sandbox                    | `@rtq/sandbox`       | `packages/sandbox/src/{darwin,linux,windows,env,path}.ts`       |
+| Audit                      | `@rtq/audit`         | `packages/audit/src/index.ts`                                   |
+| Facade                     | `@rtq/security`      | `packages/security/src/index.ts`                                |
+| Crypto primitives          | `@rtq/crypto`        | `packages/crypto/src/*`                                         |
+| Tooling                    | `@rtq/cli`           | `packages/cli/src/index.ts`                                     |
+
+## Quick example
+
+```ts
+import { createRTQ } from "@rtq/security";
+
+const rtq = createRTQ({ signingKey: process.env.RTQ_SIGNING_KEY! });
+
+rtq.registerCapability({
+  name: "files.read",
+  version: 1,
+  description: "Read a file inside the workspace",
+  inputSchema: {
+    type: "object",
+    properties: { path: { type: "string" } },
+    required: ["path"],
+    additionalProperties: false,
+  },
+  risk: { base: "low" },
+  execute: async (ctx, input) => ({ ok: true, data: { input } }),
+});
+
+rtq.registerPolicy({
+  kind: "allow",
+  capability: "files.read",
+  reason: "workspace reads",
+});
+
+const auth = await rtq.authorize({
+  capability: "files.read",
+  version: 1,
+  input: { path: "/workspace/report.md" },
+});
+
+if (auth.decision === "allowed") {
+  const outcome = await rtq.execute(auth.ticketId);
+}
+```

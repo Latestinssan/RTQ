@@ -1,0 +1,53 @@
+# RTQ — Risk-Adaptive Capability Security Runtime
+
+RTQ is a standalone, dependency-free security library that turns **"can this
+agent/tool do this?"** into a provable pipeline:
+
+```text
+Command → Capability (registered) → Risk (authoritative) → Policy (default-deny)
+       → Clarification → Approval (human/device) → Ticket (signed, single-use)
+       → Execution (OS-sandboxed) → Audit (redacted)
+```
+
+Every layer is a separate `@rtq/*` package with explicit types, tests, and a
+documented threat model. No runtime dependencies.
+
+## The short version
+
+- **Explicit surface.** Only registered capabilities can run. Everything else
+  is denied.
+- **Default-deny policy.** A missing rule is a denial, never an allow.
+- **Authoritative risk.** Caller claims can never lower risk.
+- **Single-use tickets.** HMAC-SHA256, bound to the exact operation; replay,
+  tamper, and version changes are rejected.
+- **QR / mobile verification.** Challenge-response only — scanning grants
+  nothing. No PINs, no `approve=true`.
+- **Fail-closed sandbox.** No sandbox → no execution. The unsandboxed escape
+  hatch is explicit and reported.
+- **Redacted audit.** Secret-shaped values never reach a sink.
+
+## Packages
+
+| Package              | Responsibility                                             |
+| -------------------- | ---------------------------------------------------------- |
+| `@rtq/core`          | security-model types, registry, ticket store, schema       |
+| `@rtq/risk`          | authoritative risk engine                                  |
+| `@rtq/policy`        | default-deny declarative rules                             |
+| `@rtq/clarification` | structured questions for missing security-critical params  |
+| `@rtq/approval`      | strategies + QR/mobile challenge-response                  |
+| `@rtq/sandbox`       | macOS Seatbelt, Linux bubblewrap, Windows AppContainer+Job |
+| `@rtq/audit`         | structured, redacted events                                |
+| `@rtq/security`      | pipeline façade (`createRTQ`)                              |
+| `@rtq/crypto`        | canonical JSON, HMAC-SHA256, constant-time compare         |
+| `@rtq/cli`           | actionable operator tooling                                |
+
+## Start here
+
+- [Security overview](/security-overview)
+- [Threat model](/threat-model)
+- [Security verification matrix](/verification-matrix)
+- [CLI reference](/cli)
+
+## License
+
+Apache-2.0. Original implementation — see [Provenance](/provenance).

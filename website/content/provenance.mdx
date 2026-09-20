@@ -1,0 +1,40 @@
+# Provenance
+
+Full audit trail in [`docs/source.md`](https://github.com/example/rtq/blob/main/docs/source.md).
+
+RTQ is an **original, standalone implementation**. It was not copied,
+renamed, or shipped from any other project. It was _informed by a deep
+audit_ of a federated MCP bridge application. This page records that trail.
+
+## Design inputs from the audit (weaknesses RTQ avoids)
+
+| Audited-app weakness                         | How RTQ avoids it                                       |
+| -------------------------------------------- | ------------------------------------------------------- |
+| PIN accepted as an authorization primitive   | device verification is always signed challenge-response |
+| Sequential/predictable ticket IDs            | v4 UUIDs                                                |
+| Non-recursive canonical JSON                 | recursive, deterministic canonicalJSON (`@rtq/crypto`)  |
+| Home-directory allowlist in sandbox defaults | no implicit grants; default-deny                        |
+| Regex-only input validation                  | JSON-schema + input-hash binding                        |
+| Approvals never expire                       | single-use, short-lived challenges with purge           |
+| Caller-supplied risk trusted                 | authoritative risk; claims can only raise               |
+
+These are documented design inputs — none of them is a feature RTQ ships,
+and none of the audited app's code, tests, or config is in this repository.
+
+## Sources beyond the audit
+
+- NIST SP 800-207 (zero trust): default-deny, explicit surface.
+- OWASP Authorization Cheat Sheet: capability-based authorization,
+  policy-per-request.
+- RFC-style short-lived bearer semantics adapted to single-use capability
+  tickets.
+
+## What is NOT in RTQ
+
+- No code from the audited app.
+- No PIN flows, no `approve=true` deep links.
+- No sequential ticket IDs, no unsandboxed fallback, no implicit surface.
+
+`LICENSE` (Apache-2.0) and `NOTICE` declare origin; the twelve invariants
+(`tests/invariants/invariants.test.ts`) enforce the core claims above as
+code.

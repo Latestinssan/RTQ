@@ -1,0 +1,17 @@
+{
+  "name": "@rtq/risk",
+  "version": "0.1.0",
+  "description": "RTQ risk engine: authoritative, compositional risk evaluation that can never be downgraded by caller claims.",
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b tsconfig.json"
+  },
+  "dependencies": {
+    "@rtq/core": "0.1.0"
+  }
+}

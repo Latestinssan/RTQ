@@ -1,0 +1,19 @@
+node_modules/
+dist/
+*.tsbuildinfo
+*.log
+.DS_Store
+.env
+.env.*
+website/node_modules/
+website/.next/
+website/out/
+# Flutter app generated output (apps/rtq-mobile)
+apps/rtq-mobile/.dart_tool/
+apps/rtq-mobile/build/
+apps/rtq-mobile/ios/Pods/
+apps/rtq-mobile/ios/Podfile.lock
+apps/rtq-mobile/android/.gradle/
+apps/rtq-mobile/android/local.properties
+apps/rtq-mobile/.flutter-plugins
+apps/rtq-mobile/.flutter-plugins-dependencies

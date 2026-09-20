@@ -1,0 +1,56 @@
+name: Sandbox — real OS enforcement on each backend platform
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: sandbox-${{ github.ref }}
+  cancel-in-progress: false # never cut a half-run mid-enforcement
+
+jobs:
+  platform-matrix:
+    name: "${{ matrix.label }} (${{ matrix.backend }})"
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-15
+            label: macOS
+            backend: Seatbelt
+            install: echo "sandbox-exec present by default on macOS"
+          - os: ubuntu-latest
+            label: Linux
+            backend: bubblewrap
+            install: sudo apt-get update && sudo apt-get install -y bubblewrap
+          - os: windows-latest
+            label: Windows
+            backend: AppContainer+Job
+            install: echo "AppContainer runner is in-tree; no external install"
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Ensure backend is present (measures the real backend)
+        run: ${{ matrix.install }}
+      - run: npm ci
+      - name: Shipped runner exists and has no bypass
+        run: |
+          test -f packages/sandbox/scripts/windows-runner.ps1 && echo "windows runner shipped"
+          ! grep -q "approve=true" packages/sandbox/scripts/windows-runner.ps1
+      - name: Real OS enforcement + construction invariants (${{ matrix.backend }})
+        run: npx vitest run tests/sandbox --reporter=basic
+      - name: Explicit skip report (what was NOT enforced on this OS)
+        run: npx vitest run tests/sandbox --reporter=basic 2>&1 | grep -iE "skip|passed|failed" | tail -20
+      - name: Upload skipped-suite provenance
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sandbox-${{ matrix.os }}
+          path: |
+            tests/sandbox/*.ts

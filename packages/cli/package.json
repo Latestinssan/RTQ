@@ -1,0 +1,24 @@
+{
+  "name": "@rtq/cli",
+  "version": "0.1.0",
+  "description": "RTQ command-line tool: capabilities, policy check, sandbox test, ticket signature verify, diagnostics.",
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "rtq": "./dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b tsconfig.json"
+  },
+  "dependencies": {
+    "@rtq/core": "0.1.0",
+    "@rtq/crypto": "0.1.0",
+    "@rtq/policy": "0.1.0",
+    "@rtq/sandbox": "0.1.0",
+    "@rtq/security": "0.1.0"
+  }
+}

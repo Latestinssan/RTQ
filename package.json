@@ -1,0 +1,34 @@
+{
+  "name": "rtq",
+  "version": "0.1.0",
+  "private": true,
+  "description": "RTQ — Risk-Adaptive Capability Security Runtime. Capability-based authorization, risk-engineered policy, cryptographic authorization tickets, OS-level sandboxing, and reproducible verification.",
+  "license": "Apache-2.0",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "tsc --build tsconfig.build.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "test:unit": "vitest run tests/unit",
+    "test:mcp": "vitest run tests/mcp",
+    "test:mobile": "vitest run tests/mobile tests/protocol",
+    "test:security": "vitest run tests/security",
+    "test:fs": "vitest run tests/fs",
+    "test:sandbox": "vitest run tests/sandbox",
+    "test:coverage": "vitest run --coverage",
+    "format": "prettier --write \"**/*.{ts,js,json,md,yml,mdx}\"",
+    "format:check": "prettier --check \"**/*.{ts,js,json,md,yml,mdx}\"",
+    "ci": "npm run typecheck && npm run format:check && npm run test"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.2",
+    "vitest": "^3.0.5"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

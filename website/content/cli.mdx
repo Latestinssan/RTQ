@@ -1,0 +1,26 @@
+# CLI reference
+
+Full reference in [`docs/cli.md`](https://github.com/example/rtq/blob/main/docs/cli.md).
+Every command prints what you need to decide and exits nonzero when the
+answer is "not OK".
+
+```sh
+export RTQ_SIGNING_KEY="$(openssl rand -hex 32)"
+```
+
+| Command                                                    | Purpose                                                       | Exit codes                     |
+| ---------------------------------------------------------- | ------------------------------------------------------------- | ------------------------------ |
+| `rtq capabilities --config <file>`                         | list the registered surface with base risk, approval, sandbox | 0 ok / 1 error                 |
+| `rtq policy check <cmd.json> --config <file> [--origin X]` | evaluate one command; prints JSON decision                    | 0 allowed / 3 denied / 2 usage |
+| `rtq sandbox test`                                         | report the constructible OS backend + per-layer enforcement   | 0 verified / 1 none            |
+| `rtq verify signature --ticket <file>`                     | verify a ticket cryptogram (does not redeem)                  | 0 valid / 4 invalid / 2 usage  |
+| `rtq diagnostics`                                          | JSON platform/backend report (used by CI)                     | 0                              |
+
+Example:
+
+```sh
+RTQ_SIGNING_KEY=$KEY npx rtq policy check command.json \
+  --config settings/config.js --origin remote
+```
+
+Tests: `tests/cli/cli.test.ts`.

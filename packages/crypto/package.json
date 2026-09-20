@@ -1,0 +1,14 @@
+{
+  "name": "@rtq/crypto",
+  "version": "0.1.0",
+  "description": "RTQ cryptography primitives: deterministic canonicalization, hashing, HMAC signing, nonces, and audit redaction.",
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b tsconfig.json"
+  }
+}

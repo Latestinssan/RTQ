@@ -1,0 +1,55 @@
+# Mobile Approval
+
+- Full specification: [`docs/mobile-approval/README.md`](https://github.com/example/rtq/blob/main/docs/mobile-approval/README.md)
+  (architecture, protocol, pairing, QR, flow, PIN, biometrics, keys,
+  transport, replay, revocation, threat model, testing, limitations).
+- Aartiq comparison and migration: [`docs/mobile-approval/aartiq-migration.md`](https://github.com/example/rtq/blob/main/docs/mobile-approval/aartiq-migration.md)
+  — Aartiq should adopt the RTQ protocol.
+
+The Flutter app (`apps/rtq-mobile`) lets a human make **one decision**:
+approve or deny a specific, cryptographically bound action. The app is
+**never the authorization authority** — it signs a challenge binding with an
+on-device Ed25519 key and the RTQ host independently verifies everything.
+
+## The one-paragraph model
+
+The host shows a signed **challenge** QR. Scanning it grants nothing (the
+payload has no secret and no `approve` flag). The human reviews exactly what
+is proposed, proves a local possession factor (PIN, optionally biometrics),
+and the device signs the canonical challenge binding. The signed approval
+travels to the host over a separate, untrusted transport; the host verifies
+signature, device authorization, every binding field, expiry, nonce,
+single-use consumption, and policy before executing. A PIN is never
+transmitted; a private key never leaves the device; a captured approval
+cannot be replayed.
+
+## Sequence
+
+```text
+Host            Screen          Mobile app            Human
+ |--pair QR------>|               |                    |
+ |                 |---scan------->|                    |
+ |                 |               |--verify sig------->| (pinned host key)
+ |                 |               |<--confirm+PIN------|
+ |                 |               |--sign response---->|  POST /pair/complete
+ |<--register+ok---|               |                    |
+ |                 |               |--pin host key------|
+ |                 |               |                    |
+ |--challenge QR-->|               |                    |
+ |                 |---scan------->|                    |
+ |                 |               |--verify vs pin---->|
+ |                 |               |<--brief+review-----|  Approve/Deny
+ |                 |               |--local auth(PIN)-->|
+ |                 |               |--sign approval---->|  POST /approve
+ |<--verify all-----|               |                    |
+ |   execute only   |               |                    |
+```
+
+## Verification status
+
+Verified locally (this branch has no commits yet, so no SHAs or CI runs to
+cite — the [docs page](https://github.com/example/rtq/blob/main/docs/mobile-approval/README.md)
+lists exact numbers): `dart analyze` 0 issues, `flutter test` 85/85,
+cross-implementation vectors byte-exact vs the TypeScript host, and a
+runnable device-perspective example at
+`examples/mobile-approval/device-perspective.ts`.

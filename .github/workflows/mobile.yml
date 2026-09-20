@@ -1,0 +1,77 @@
+name: Mobile — Flutter app (format, analyze, tests, protocol vectors, Android build)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: mobile-${{ github.ref }}
+  cancel-in-progress: true
+
+# Scope is intentionally honest:
+#   * `flutter analyze` and `flutter test` run on the VM — no platform claims.
+#   * Android debug APK builds on Linux (fully supported by the toolchain here).
+#   * iOS and real-device behavior are NOT built or asserted in this workflow;
+#     they require a macOS runner with Xcode and a signing setup that this repo
+#     does not configure. `flutter analyze`/`flutter test` still validate the
+#     shared Dart code on all platforms.
+jobs:
+  check:
+    name: "format + analyze + test (Dart)"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/rtq-mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: dart format --output=none --set-exit-if-changed .
+        name: "format check"
+      - run: flutter analyze
+        name: "analyze"
+      - run: flutter test
+        name: "test (incl. cross-implementation protocol vectors)"
+
+  android-build:
+    name: "Android debug APK build"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/rtq-mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter build apk --debug
+        name: "build debug APK"
+
+  protocol-cross-check:
+    name: "Cross-implementation vectors (Node vs Dart)"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: npm ci
+      - run: npm run test:mobile
+        name: "TypeScript host + protocol tests (bytes the vectors are pinned to)"
+      - run: flutter pub get
+        working-directory: apps/rtq-mobile
+      - run: flutter test test/protocol
+        working-directory: apps/rtq-mobile
+        name: "Dart consumption of the same vectors (byte-exact re-sign)"

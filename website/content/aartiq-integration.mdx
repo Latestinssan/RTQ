@@ -1,0 +1,76 @@
+# Aartiq integration
+
+RTQ was designed from a deep audit of a federated MCP bridge application
+(see [Provenance](/provenance)). The audited app's **code is not part of
+RTQ** — but RTQ's design is the security layer that application class needs.
+
+This page describes how to bring RTQ to an Aartiq-style federated MCP app
+without coupling to its internals.
+
+## What Aartiq-style apps need
+
+A federated MCP bridge exposes many remote tools through one local process.
+That concentration of authority is exactly what RTQ isolates:
+
+1. **Capabilities = the bridge's tools.** Register every remote tool as an
+   explicit capability. `registerCapability` is the only executable surface.
+2. **Per-tool risk.** Tools touching files, network, or credentials declare
+   higher base risk; the risk engine escalates by origin and resource.
+3. **Policy per tool.** Allow remote `library.search`, deny remote
+   `filesystem.write`, require verification for `account.delete`.
+4. **MCP ticket bindings.** Tools reached through MCP get tickets additionally
+   bound to `serverId`, tool name, schema hash, and tenant, enforced at
+   redemption.
+5. **QR approval for high-risk tool calls.** The human scans a challenge;
+   the mobile device (which did its own local auth) signs the exact
+   challenge. Scanning grants nothing.
+6. **Sandboxed execution.** Every tool call runs under the OS sandbox with
+   a constructed environment — the bridge process itself never gains ambient
+   credentials.
+
+## Integration sketch
+
+```ts
+import { createRTQ } from "@rtq/security";
+
+const rtq = createRTQ({
+  signingKey: process.env.RTQ_SIGNING_KEY!,
+  deviceKeyStore: myDeviceKeyStore, // Keychain / Credential Locker
+});
+
+// One capability per remote tool, bound to its MCP identity.
+rtq.registerCapability({
+  name: "mcp//github.com/tenant-a:search.repos",
+  version: 1,
+  description: "Search repositories (tenant-a)",
+  inputSchema: {
+    type: "object",
+    properties: { q: { type: "string" } },
+    required: ["q"],
+    additionalProperties: false,
+  },
+  risk: { base: "low", requiresNetwork: true },
+  mcp: {
+    serverId: "github.com/tenant-a",
+    toolName: "search.repos",
+    schemaHash: "sha256:...",
+    tenantId: "tenant-a",
+  },
+  execute: (ctx, input) => mcpClient.call(boundServer, "search.repos", input),
+});
+```
+
+The MCP client in the bridge accepts an `RTQAuthorizer` that calls
+`rtq.authorize` and only calls the tool with the **redeemed ticket's input**
+— never with caller-supplied input after authorization.
+
+## What RTQ does NOT do for you
+
+- It is not an MCP client or server — the bridge keeps its transport.
+- It does not decide _which_ tools exist — you register them.
+- It does not replace the mobile app's local authentication — it verifies
+  the signature the device produces.
+
+See also [`docs/source.md`](https://github.com/example/rtq/blob/main/docs/source.md)
+for the audit trail and the explicit list of audited-app weaknesses RTQ
+designs out.
