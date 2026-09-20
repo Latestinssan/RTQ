@@ -1,99 +1,281 @@
 import Link from "next/link";
+import { CheckCircle2, Shield, AlertTriangle, ExternalLink, TestTube, ArrowRight } from "lucide-react";
+import {
+  COMMIT_SHA,
+  REPO_BASE,
+  EvidenceBadge,
+  getGithubSourceUrl,
+  getWorkflowUrl,
+} from "@/components/evidence/EvidenceBadge";
+
+export const metadata = {
+  title: "Verification Matrix",
+  description: "Twelve automated security properties tested in repository CI on every commit.",
+};
 
 export default function VerificationMatrixPage() {
+  const properties = [
+    {
+      id: "INV-01",
+      property: "Explicit surface: unregistered capability is denied",
+      level: "LEVEL 1 — UNIT TESTED" as const,
+      impl: "packages/security/src/index.ts",
+      implLines: "L295-L301",
+      test: "tests/invariants/invariants.test.ts",
+      testLines: "L54-L62",
+      workflow: "security.yml",
+      runner: "ubuntu-latest",
+    },
+    {
+      id: "INV-02",
+      property: "Explicit surface: wrong capability version is denied",
+      level: "LEVEL 1 — UNIT TESTED" as const,
+      impl: "packages/security/src/index.ts",
+      implLines: "L302-L307",
+      test: "tests/invariants/invariants.test.ts",
+      testLines: "L64-L72",
+      workflow: "security.yml",
+      runner: "ubuntu-latest",
+    },
+    {
+      id: "INV-03",
+      property: "Default-deny policy: no matching rule results in denial",
+      level: "LEVEL 1 — UNIT TESTED" as const,
+      impl: "packages/policy/src/index.ts",
+      implLines: "L365-L382",
+      test: "tests/invariants/invariants.test.ts",
+      testLines: "L74-L82",
+      workflow: "security.yml",
+      runner: "ubuntu-latest",
+    },
+    {
+      id: "INV-04",
+      property: "Authoritative risk: caller claimedRisk cannot downgrade declared risk",
+      level: "LEVEL 1 — UNIT TESTED" as const,
+      impl: "packages/security/src/index.ts",
+      implLines: "L337-L347",
+      test: "tests/invariants/invariants.test.ts",
+      testLines: "L84-L112",
+      workflow: "security.yml",
+      runner: "ubuntu-latest",
+    },
+    {
+      id: "INV-05",
+      property: "Origin is a hint: unknown origin is never treated as local and escalates",
+      level: "LEVEL 1 — UNIT TESTED" as const,
+      impl: "packages/security/src/index.ts",
+      implLines: "L320-L325",
+      test: "tests/invariants/invariants.test.ts",
+      testLines: "L114-L131",
+      workflow: "security.yml",
+      runner: "ubuntu-latest",
+    },
+    {
+      id: "INV-06",
+      property: "Approval strategy defaults: high/critical risk is never automatic",
+      level: "LEVEL 1 — UNIT TESTED" as const,
+      impl: "packages/security/src/index.ts",
+      implLines: "L437-L449",
+      test: "tests/invariants/invariants.test.ts",
+      testLines: "L133-L189",
+      workflow: "security.yml",
+      runner: "ubuntu-latest",
+    },
+    {
+      id: "INV-07",
+      property: "Sandbox network deny-by-default: emits --unshare-net; unsupported allowlist throws",
+      level: "LEVEL 1 — UNIT TESTED" as const,
+      impl: "packages/sandbox/src/index.ts",
+      implLines: "L140-L195",
+      test: "tests/invariants/invariants.test.ts",
+      testLines: "L191-L217",
+      workflow: "security.yml",
+      runner: "ubuntu-latest",
+    },
+    {
+      id: "INV-08",
+      property: "Ambient secrets stripped from child process environment",
+      level: "LEVEL 1 — UNIT TESTED" as const,
+      impl: "packages/sandbox/src/index.ts",
+      implLines: "L85-L125",
+      test: "tests/invariants/invariants.test.ts",
+      testLines: "L219-L243",
+      workflow: "security.yml",
+      runner: "ubuntu-latest",
+    },
+    {
+      id: "INV-09",
+      property: "Single-use tickets: second redemption is rejected (replay check)",
+      level: "LEVEL 2 — INTEGRATION TESTED" as const,
+      impl: "packages/core/src/ticket-store.ts",
+      implLines: "L194-L206",
+      test: "tests/invariants/invariants.test.ts",
+      testLines: "L245-L263",
+      workflow: "security.yml",
+      runner: "ubuntu-latest",
+    },
+    {
+      id: "INV-10",
+      property: "Tickets are replay- and tamper-resistant via HMAC-SHA256 signatures",
+      level: "LEVEL 1 — UNIT TESTED" as const,
+      impl: "packages/core/src/ticket-store.ts",
+      implLines: "L159-L164",
+      test: "tests/unit/ticket-store.test.ts",
+      testLines: "L70-L86",
+      workflow: "security.yml",
+      runner: "ubuntu-latest",
+    },
+    {
+      id: "INV-11",
+      property: "Replacing a capability invalidates previously issued outstanding tickets",
+      level: "LEVEL 2 — INTEGRATION TESTED" as const,
+      impl: "packages/core/src/ticket-store.ts",
+      implLines: "L232-L240",
+      test: "tests/invariants/invariants.test.ts",
+      testLines: "L291-L323",
+      workflow: "security.yml",
+      runner: "ubuntu-latest",
+    },
+    {
+      id: "INV-12",
+      property: "Approval substitution rejected: approval for challenge A cannot authorize B",
+      level: "LEVEL 2 — INTEGRATION TESTED" as const,
+      impl: "packages/security/src/index.ts",
+      implLines: "L470-L520",
+      test: "tests/invariants/invariants.test.ts",
+      testLines: "L325-L380",
+      workflow: "security.yml",
+      runner: "ubuntu-latest",
+    },
+  ];
+
   return (
-    <div>
-      <div className="mb-12">
-        <p className="mb-4 text-[10px] font-black uppercase tracking-[0.5em] text-sky-400">Security</p>
-        <h1 className="mb-4 text-4xl font-black tracking-tight text-white">Verification Matrix</h1>
-        <p className="text-lg text-white/50">
-          Twelve automated invariants verify RTQ&apos;s security properties in CI.
-          Every invariant is a test that must pass before any release ships.
+    <div className="space-y-10">
+      <div>
+        <p className="mb-3 text-[10px] font-mono font-bold uppercase tracking-[0.5em] text-sky-400">
+          Security &bull; CI Verification
+        </p>
+        <h1 className="text-3xl font-black tracking-tight text-white md:text-5xl">
+          Verification Matrix
+        </h1>
+        <p className="mt-4 text-base text-white/60 leading-relaxed">
+          Below are the 12 automated checks configured for the current verification suite. The evidence shown here corresponds to commit e179d2b.
+        </p>
+        <p className="mt-2 text-sm font-bold text-emerald-400">
+          CI status for e179d2b: Passed
         </p>
       </div>
 
-      <h2 className="mb-4 text-2xl font-black text-white">Invariant Matrix</h2>
-      <div className="mb-8 overflow-x-auto">
-        <table className="w-full text-left text-sm">
-          <thead>
-            <tr className="border-b border-white/10">
-              <th className="pb-3 text-[10px] font-black uppercase tracking-wider text-white/40">#</th>
-              <th className="pb-3 text-[10px] font-black uppercase tracking-wider text-white/40">Invariant</th>
-              <th className="pb-3 text-[10px] font-black uppercase tracking-wider text-white/40">Package</th>
-              <th className="pb-3 text-[10px] font-black uppercase tracking-wider text-white/40">Status</th>
-            </tr>
-          </thead>
-          <tbody className="text-white/60">
-            {[
-              ["INV-01", "Unregistered capability → rejection", "@rtq/core", "✓ Enforced"],
-              ["INV-02", "Replay of consumed ticket → 409 Conflict", "@rtq/core", "✓ Enforced"],
-              ["INV-03", "Caller risk-lowering attempt → ignored", "@rtq/risk", "✓ Enforced"],
-              ["INV-04", "Missing policy rule → denial (default-deny)", "@rtq/policy", "✓ Enforced"],
-              ["INV-05", "Expired ticket → rejection", "@rtq/core", "✓ Enforced"],
-              ["INV-06", "Tampered ticket signature → rejection", "@rtq/crypto", "✓ Enforced"],
-              ["INV-07", "Missing sandbox → execution blocked", "@rtq/sandbox", "✓ Enforced"],
-              ["INV-08", "Audit event contains no raw secrets", "@rtq/audit", "✓ Enforced"],
-              ["INV-09", "Clarification loop terminates or times out", "@rtq/clarification", "✓ Enforced"],
-              ["INV-10", "Policy engine rejects unknown capability", "@rtq/policy", "✓ Enforced"],
-              ["INV-11", "Ticket is single-use (second use rejected)", "@rtq/core", "✓ Enforced"],
-              ["INV-12", "Platform sandbox actually restricts filesystem", "@rtq/sandbox", "✓ Enforced"],
-            ].map(([id, desc, pkg, status]) => (
-              <tr key={id} className="border-b border-white/5">
-                <td className="py-3 font-mono text-xs text-sky-400">{id}</td>
-                <td className="py-3">{desc}</td>
-                <td className="py-3 font-mono text-xs text-white/40">{pkg}</td>
-                <td className="py-3"><span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400">{status}</span></td>
+      <div className="rounded-xl border border-sky-500/20 bg-sky-500/5 p-4 text-xs text-sky-200/90 leading-relaxed">
+        <strong>Verification specification revision: e179d2b</strong> – invariant definitions were updated at this commit; previous IDs may have changed. See the <Link href="/docs/invariant-changelog.md" className="underline text-sky-300 font-bold">Changelog</Link>.
+      </div>
+
+      {/* Methodology Disclaimer */}
+      <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 text-xs text-amber-200/90 leading-relaxed">
+        <strong>Important Clarification:</strong> Passing automated CI tests does not constitute a
+        formal mathematical proof or an independent security audit. Each check demonstrates
+        empirical conformance for the tested code paths and environment. For complete evidence chains,
+        see the{" "}
+        <Link href="/docs/evidence" className="underline text-amber-300 font-bold">
+          Evidence &amp; Verification
+        </Link>{" "}
+        documentation.
+      </div>
+
+      {/* Properties Table */}
+      <div>
+        <h2 className="text-xl font-bold text-white mb-4">
+          Automated Properties Tested in CI
+        </h2>
+        <div className="overflow-x-auto rounded-xl border border-white/10 bg-[#070914]">
+          <table className="w-full text-left text-xs">
+            <thead>
+              <tr className="border-b border-white/10 bg-white/[0.02]">
+                <th className="p-3.5 font-mono text-[10px] font-bold uppercase tracking-wider text-white/40">ID</th>
+                <th className="p-3.5 font-mono text-[10px] font-bold uppercase tracking-wider text-white/40">Tested Property</th>
+                <th className="p-3.5 font-mono text-[10px] font-bold uppercase tracking-wider text-white/40">Level</th>
+                <th className="p-3.5 font-mono text-[10px] font-bold uppercase tracking-wider text-white/40">Source Code</th>
+                <th className="p-3.5 font-mono text-[10px] font-bold uppercase tracking-wider text-white/40">Test Code</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <h2 className="mb-4 text-2xl font-black text-white">Test Suites</h2>
-      <div className="mb-8 grid gap-3 md:grid-cols-2">
-        {[
-          { suite: "core", tests: "Registry, ticket store, replay, expiry", label: "158+ tests" },
-          { suite: "risk", tests: "Risk computation, claim rejection, factors", label: "45+ tests" },
-          { suite: "policy", tests: "Default-deny, rule matching, capability gating", label: "38+ tests" },
-          { suite: "sandbox", tests: "Seatbelt, bubblewrap, AppContainer enforcement", label: "65+ tests" },
-          { suite: "audit", tests: "Event emission, secret redaction, integrity", label: "28+ tests" },
-          { suite: "approval", tests: "Ticket signing, QR flow, mobile pairing", label: "52+ tests" },
-        ].map((s) => (
-          <div key={s.suite} className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
-            <div className="mb-2 flex items-center justify-between">
-              <code className="text-xs font-bold text-sky-400">@rtq/{s.suite}</code>
-              <span className="text-[10px] text-white/30">{s.label}</span>
-            </div>
-            <p className="text-xs text-white/40">{s.tests}</p>
-          </div>
-        ))}
-      </div>
-
-      <h2 className="mb-4 text-2xl font-black text-white">Platform Gating</h2>
-      <p className="mb-4 text-sm text-white/50">
-        Platform-specific tests run only on their target OS. CI skips tests when
-        the required platform is unavailable — counted as skipped, never as
-        passing.
-      </p>
-      <div className="mb-8 rounded-2xl border border-white/5 bg-white/[0.02] p-6 font-mono text-xs leading-relaxed text-white/50">
-        <span className="text-white/30"># CI matrix</span><br />
-        jest.yml → 4 jobs:<br />
-        &nbsp;&nbsp;• core (all platforms)<br />
-        &nbsp;&nbsp;• sandbox-macos (Seatbelt)<br />
-        &nbsp;&nbsp;• sandbox-linux (bubblewrap)<br />
-        &nbsp;&nbsp;• sandbox-windows (AppContainer)
-      </div>
-
-      <div className="mt-12 rounded-2xl border border-white/5 bg-white/[0.02] p-6">
-        <p className="mb-4 text-xs font-black uppercase tracking-wider text-white/30">Next</p>
-        <div className="flex flex-wrap gap-3">
-          <Link href="/docs/verification-traceability" className="rounded-xl border border-sky-500/20 bg-sky-500/5 px-4 py-2 text-xs font-bold text-sky-400 transition hover:bg-sky-500/20">
-            Traceability →
-          </Link>
-          <Link href="/docs/platform-support" className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold text-white/60 transition hover:bg-white/10">
-            Platform Support →
-          </Link>
+            </thead>
+            <tbody className="divide-y divide-white/5 font-mono">
+              {properties.map((p) => (
+                <tr key={p.id} className="hover:bg-white/[0.02] transition">
+                  <td className="p-3.5 text-sky-400 font-bold">{p.id}</td>
+                  <td className="p-3.5 font-sans text-white/80 max-w-xs">{p.property}</td>
+                  <td className="p-3.5">
+                    <EvidenceBadge level={p.level} />
+                  </td>
+                  <td className="p-3.5 text-[11px]">
+                    <a
+                      href={`${REPO_BASE}/blob/${COMMIT_SHA}/${p.impl}#${p.implLines}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sky-400 hover:underline inline-flex items-center gap-1"
+                    >
+                      <span>{p.implLines}</span>
+                      <ExternalLink size={10} />
+                    </a>
+                  </td>
+                  <td className="p-3.5 text-[11px]">
+                    <a
+                      href={`${REPO_BASE}/blob/${COMMIT_SHA}/${p.test}#${p.testLines}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sky-300 hover:underline inline-flex items-center gap-1"
+                    >
+                      <span>{p.testLines}</span>
+                      <ExternalLink size={10} />
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
+      </div>
+
+      {/* Real OS Gating & Workflows */}
+      <div className="space-y-4">
+        <h2 className="text-xl font-bold text-white">CI Workflows &amp; Runners</h2>
+        <p className="text-xs text-white/50 leading-relaxed">
+          Tests are executed in Vitest under Node 24 on GitHub Actions runners.
+          Platform sandboxes run on their specific OS runner in{" "}
+          <code className="text-sky-300">.github/workflows/sandbox.yml</code>:
+        </p>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 text-xs">
+          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4 space-y-2">
+            <span className="font-mono font-bold text-sky-400">security.yml</span>
+            <p className="text-white/60">
+              Runs the 12 invariants on <code className="text-white">ubuntu-latest</code>. Also runs
+              pipeline and audit integration tests across an OS matrix (Ubuntu, macOS, Windows).
+            </p>
+          </div>
+          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4 space-y-2">
+            <span className="font-mono font-bold text-sky-400">sandbox.yml</span>
+            <p className="text-white/60">
+              Executes real macOS Seatbelt tests on <code className="text-white">macos-15</code>,
+              bubblewrap checks on <code className="text-white">ubuntu-latest</code>, and AppContainer
+              checks on <code className="text-white">windows-latest</code>.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-8 flex flex-wrap gap-4 border-t border-white/10 pt-6">
+        <Link
+          href="/docs/evidence"
+          className="rounded-xl border border-sky-500/20 bg-sky-500/10 px-4 py-2.5 font-mono text-xs font-bold text-sky-400 hover:bg-sky-500/20 transition inline-flex items-center gap-1.5"
+        >
+          <span>View Full Evidence Chains &rarr;</span>
+        </Link>
+        <Link
+          href="/docs/threat-model"
+          className="rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 font-mono text-xs font-bold text-white/70 hover:bg-white/10 hover:text-white transition"
+        >
+          Threat Model &amp; Limitations &rarr;
+        </Link>
       </div>
     </div>
   );

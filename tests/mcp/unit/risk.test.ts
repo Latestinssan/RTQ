@@ -39,18 +39,26 @@ describe("classifyEffectiveOperations", () => {
   });
 
   it("http transport implies requiresNetwork but does NOT add 'network' to operations", () => {
-    const result = classifyEffectiveOperations(undefined, {
-      name: "do_something",
-    }, "http");
+    const result = classifyEffectiveOperations(
+      undefined,
+      {
+        name: "do_something",
+      },
+      "http",
+    );
     expect(result.requiresNetwork).toBe(true);
     // "network" is only added via declaredCapabilities, not transport alone
     expect(result.operations).not.toContain("network");
   });
 
   it("stdio transport does NOT imply requiresNetwork", () => {
-    const result = classifyEffectiveOperations(undefined, {
-      name: "do_something",
-    }, "stdio");
+    const result = classifyEffectiveOperations(
+      undefined,
+      {
+        name: "do_something",
+      },
+      "stdio",
+    );
     expect(result.requiresNetwork).toBe(false);
   });
 
@@ -80,7 +88,11 @@ describe("getEffectiveOperations", () => {
   });
 
   it("passes transport to classifyEffectiveOperations", () => {
-    const result = classifyEffectiveOperations(undefined, { name: "fetch_data" }, "http");
+    const result = classifyEffectiveOperations(
+      undefined,
+      { name: "fetch_data" },
+      "http",
+    );
     expect(result.requiresNetwork).toBe(true);
   });
 });

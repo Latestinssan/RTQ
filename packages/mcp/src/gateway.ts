@@ -21,7 +21,11 @@ import { McpRegistry } from "./registry";
 import { McpPolicyEngine } from "./policy";
 import { McpRiskAdvisor, classifyEffectiveOperations } from "./risk";
 import type { McpRiskAdvice, McpEffectiveOperation } from "./risk";
-import { computeToolSchemaHash, normalizeToolSchema, validateToolArguments } from "./schemas";
+import {
+  computeToolSchemaHash,
+  normalizeToolSchema,
+  validateToolArguments,
+} from "./schemas";
 import { normalizeMcpResult } from "./results";
 import type { McpConnection } from "./transports";
 
@@ -166,7 +170,11 @@ export class McpGateway {
 
     let rawTools: unknown;
     try {
-      rawTools = await session.connection.request("tools/list", {}, { timeoutMs: 30_000 });
+      rawTools = await session.connection.request(
+        "tools/list",
+        {},
+        { timeoutMs: 30_000 },
+      );
     } catch {
       this.config.onAudit?.("mcp.discover.failed", {
         serverId: session.serverId,
@@ -402,10 +410,14 @@ export class McpGateway {
   ): Promise<McpGatewayResult> {
     try {
       // Call the MCP tool via the connection transport.
-      const rawResult = await session.connection.request("tools/call", {
-        name: tool.name,
-        arguments: args,
-      }, { timeoutMs: session.limits.requestTimeoutMs ?? 30_000 });
+      const rawResult = await session.connection.request(
+        "tools/call",
+        {
+          name: tool.name,
+          arguments: args,
+        },
+        { timeoutMs: session.limits.requestTimeoutMs ?? 30_000 },
+      );
 
       // Build provenance (46.12).
       const provenance: McpResultProvenance = {
@@ -422,10 +434,14 @@ export class McpGateway {
         session.limits.maxResultSizeBytes ??
         this.config.defaultLimits?.maxResultSizeBytes ??
         1024 * 1024;
-      const normalized = normalizeMcpResult(rawResult, {
-        maxBytes: maxResultBytes,
-        truncate: session.limits.truncateOversizedResults ?? false,
-      }, provenance);
+      const normalized = normalizeMcpResult(
+        rawResult,
+        {
+          maxBytes: maxResultBytes,
+          truncate: session.limits.truncateOversizedResults ?? false,
+        },
+        provenance,
+      );
 
       if (normalized.denied) {
         return { status: "denied", reason: normalized.reason };

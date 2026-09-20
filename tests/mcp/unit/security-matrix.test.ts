@@ -91,7 +91,8 @@ function makeGateway(overrides: Partial<McpGatewayConfig> = {}) {
   const tickets = new Map<string, unknown>();
   const authorizeCalls: any[] = [];
   const executeCalls: string[] = [];
-  const auditEvents: Array<{ event: string; data: Record<string, unknown> }> = [];
+  const auditEvents: Array<{ event: string; data: Record<string, unknown> }> =
+    [];
 
   const config: McpGatewayConfig & {
     _authorizeCalls: typeof authorizeCalls;
@@ -113,7 +114,10 @@ function makeGateway(overrides: Partial<McpGatewayConfig> = {}) {
     riskAdvisor: new McpRiskAdvisor(),
     authorize: vi.fn().mockImplementation(async (params: any) => {
       authorizeCalls.push(params);
-      return { ticketId: `tkt_${authorizeCalls.length}`, approvalRequired: false };
+      return {
+        ticketId: `tkt_${authorizeCalls.length}`,
+        approvalRequired: false,
+      };
     }),
     execute: vi.fn().mockImplementation(async (ticketId: string) => {
       executeCalls.push(ticketId);
@@ -121,10 +125,14 @@ function makeGateway(overrides: Partial<McpGatewayConfig> = {}) {
     }),
     tickets: {
       peek: (id: string) => tickets.get(id),
-      park: (id: string, v: unknown) => { tickets.set(id, v); },
+      park: (id: string, v: unknown) => {
+        tickets.set(id, v);
+      },
     },
     defaultLimits: { maxResultSizeBytes: 64 * 1024 },
-    onAudit: (event: string, data: Record<string, unknown>) => { auditEvents.push({ event, data }); },
+    onAudit: (event: string, data: Record<string, unknown>) => {
+      auditEvents.push({ event, data });
+    },
     _authorizeCalls: authorizeCalls,
     _executeCalls: executeCalls,
     _tickets: tickets,
@@ -174,7 +182,10 @@ describe("46.30 Security Matrix — Unknown entity denial", () => {
   it("#5 incomplete schema tool fails contract check", async () => {
     const registry = new McpRegistry();
     registry.registerServer(DEFAULT_SERVER);
-    const tool = registry.registerTool("test-server", makeToolMeta({ incomplete: true }));
+    const tool = registry.registerTool(
+      "test-server",
+      makeToolMeta({ incomplete: true }),
+    );
     const report = runContractCheck(tool);
     expect(report.passed).toBe(false);
     expect(tool.needsReevaluation).toBe(true);
@@ -253,14 +264,17 @@ describe("46.30 Security Matrix — Ticket hygiene", () => {
 
     await gw.invoke("test-server", "read_file", { path: "/x" });
     await gw.invoke("test-server", "read_file", { path: "/x" });
-    expect(config._authorizeCalls[0].metadata.mcp.argumentsHash)
-      .toBe(config._authorizeCalls[1].metadata.mcp.argumentsHash);
+    expect(config._authorizeCalls[0].metadata.mcp.argumentsHash).toBe(
+      config._authorizeCalls[1].metadata.mcp.argumentsHash,
+    );
   });
 
   // #12: Approval-required ticket is parked, not auto-executed
   it("#12 approval_required parks ticket and returns without execution", async () => {
     const { gw, config } = makeGateway({
-      authorize: vi.fn().mockResolvedValue({ ticketId: "tkt_parked", approvalRequired: true }),
+      authorize: vi
+        .fn()
+        .mockResolvedValue({ ticketId: "tkt_parked", approvalRequired: true }),
     });
     await gw.connect("test-server", mockConn());
     config.registry.registerTool("test-server", makeToolMeta());
@@ -305,16 +319,32 @@ describe("46.30 Security Matrix — Schema hardening", () => {
   // #15: Schema hash is deterministic (same input → same hash)
   it("#15 schema hash is deterministic", () => {
     const schema = { type: "object", properties: { x: { type: "string" } } };
-    const h1 = computeToolSchemaHash({ name: "t", description: "d", normalizedSchema: schema });
-    const h2 = computeToolSchemaHash({ name: "t", description: "d", normalizedSchema: schema });
+    const h1 = computeToolSchemaHash({
+      name: "t",
+      description: "d",
+      normalizedSchema: schema,
+    });
+    const h2 = computeToolSchemaHash({
+      name: "t",
+      description: "d",
+      normalizedSchema: schema,
+    });
     expect(h1).toBe(h2);
   });
 
   // #16: Schema hash changes when name changes
   it("#16 schema hash changes when name changes", () => {
     const schema = { type: "object", properties: { x: { type: "string" } } };
-    const h1 = computeToolSchemaHash({ name: "a", description: "d", normalizedSchema: schema });
-    const h2 = computeToolSchemaHash({ name: "b", description: "d", normalizedSchema: schema });
+    const h1 = computeToolSchemaHash({
+      name: "a",
+      description: "d",
+      normalizedSchema: schema,
+    });
+    const h2 = computeToolSchemaHash({
+      name: "b",
+      description: "d",
+      normalizedSchema: schema,
+    });
     expect(h1).not.toBe(h2);
   });
 
@@ -349,14 +379,22 @@ describe("46.30 Security Matrix — Result normalization", () => {
   // #18: Oversized result denied when truncate=false
   it("#18 oversized non-truncatable result is denied", () => {
     const big = "x".repeat(2000);
-    const result = normalizeMcpResult(big, { maxBytes: 100, truncate: false }, provenance);
+    const result = normalizeMcpResult(
+      big,
+      { maxBytes: 100, truncate: false },
+      provenance,
+    );
     expect(result.denied).toBe(true);
   });
 
   // #19: Oversized result truncated when truncate=true
   it("#19 oversized result is truncated when truncate=true", () => {
     const big = "x".repeat(2000);
-    const result = normalizeMcpResult(big, { maxBytes: 100, truncate: true }, provenance);
+    const result = normalizeMcpResult(
+      big,
+      { maxBytes: 100, truncate: true },
+      provenance,
+    );
     expect(result.denied).toBe(false);
   });
 
@@ -411,7 +449,12 @@ describe("46.30 Security Matrix — Policy engine", () => {
     const engine = new McpPolicyEngine({
       rules: [
         { instrument: "tool", pattern: "*", allow: true },
-        { instrument: "tool", pattern: "mcp://srv/blocked_*", allow: false, reason: "blocked" },
+        {
+          instrument: "tool",
+          pattern: "mcp://srv/blocked_*",
+          allow: false,
+          reason: "blocked",
+        },
       ],
       allowedEffectiveOperations: new Map([["read", ["mcp://*/*"]]]),
     });
@@ -491,7 +534,12 @@ describe("46.30 Security Matrix — Credential isolation", () => {
   // #29: Credential NOT returned for wrong scope
   it("#29 credential not returned for mismatched scope", () => {
     const vault = new InMemoryCredentialVault();
-    vault.store({ credential: "key", credentialClass: "read", serverId: "srv-1", toolName: "tool-a" });
+    vault.store({
+      credential: "key",
+      credentialClass: "read",
+      serverId: "srv-1",
+      toolName: "tool-a",
+    });
     const found = vault.retrieve({ serverId: "srv-1", toolName: "tool-b" });
     expect(found).toBeUndefined();
   });
@@ -512,7 +560,11 @@ describe("46.30 Security Matrix — Credential isolation", () => {
   // #31: Revoked credential not returned
   it("#31 revoked credential not returned by retrieve", () => {
     const vault = new InMemoryCredentialVault();
-    const rec = vault.store({ credential: "key", credentialClass: "read", serverId: "srv-1" });
+    const rec = vault.store({
+      credential: "key",
+      credentialClass: "read",
+      serverId: "srv-1",
+    });
     vault.revoke(rec.id);
     expect(vault.retrieve({ serverId: "srv-1" })).toBeUndefined();
   });
@@ -556,16 +608,24 @@ describe("46.30 Security Matrix — Risk advisory", () => {
 
   // #35: classifyEffectiveOperations always classifies known operations
   it("#35 classifyEffectiveOperations classifies read/write/admin from names", () => {
-    const readResult = classifyEffectiveOperations(undefined, { name: "get_file" });
+    const readResult = classifyEffectiveOperations(undefined, {
+      name: "get_file",
+    });
     expect(readResult.operations).toContain("read");
 
-    const writeResult = classifyEffectiveOperations(undefined, { name: "create_record" });
+    const writeResult = classifyEffectiveOperations(undefined, {
+      name: "create_record",
+    });
     expect(writeResult.operations).toContain("write");
 
-    const adminResult = classifyEffectiveOperations(undefined, { name: "grant_access" });
+    const adminResult = classifyEffectiveOperations(undefined, {
+      name: "grant_access",
+    });
     expect(adminResult.operations).toContain("admin");
 
-    const destructiveResult = classifyEffectiveOperations(undefined, { name: "delete_all" });
+    const destructiveResult = classifyEffectiveOperations(undefined, {
+      name: "delete_all",
+    });
     expect(destructiveResult.appearsIrreversible).toBe(true);
   });
 });

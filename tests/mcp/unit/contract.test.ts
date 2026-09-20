@@ -29,7 +29,11 @@ function toolMeta(over: Partial<McpToolMeta> = {}): McpToolMeta {
     required: ["path"],
   };
   const normalizedSchema = normalizeToolSchema(rawSchema).schema;
-  const schemaHash = computeToolSchemaHash({ name, description, normalizedSchema });
+  const schemaHash = computeToolSchemaHash({
+    name,
+    description,
+    normalizedSchema,
+  });
   return {
     name,
     description,
@@ -58,10 +62,15 @@ describe("runContractCheck", () => {
   it("fails for incomplete schema", () => {
     const registry = new McpRegistry();
     registry.registerServer(config());
-    const record = registry.registerTool("srv-1", toolMeta({ incomplete: true }));
+    const record = registry.registerTool(
+      "srv-1",
+      toolMeta({ incomplete: true }),
+    );
     const report = runContractCheck(record);
     expect(report.passed).toBe(false);
-    const completenessCheck = report.checks.find((c) => c.checkId === "schema_completeness");
+    const completenessCheck = report.checks.find(
+      (c) => c.checkId === "schema_completeness",
+    );
     expect(completenessCheck?.passed).toBe(false);
   });
 
@@ -80,7 +89,10 @@ describe("runContractCheck", () => {
   it("marks needsReevaluation on failure", () => {
     const registry = new McpRegistry();
     registry.registerServer(config());
-    const record = registry.registerTool("srv-1", toolMeta({ incomplete: true }));
+    const record = registry.registerTool(
+      "srv-1",
+      toolMeta({ incomplete: true }),
+    );
     expect(record.needsReevaluation).toBe(true);
   });
 

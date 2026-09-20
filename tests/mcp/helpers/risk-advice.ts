@@ -24,7 +24,9 @@ import type {
 export function mcpAdvice(
   severity: McpSeverity,
   effectiveOperations: readonly McpEffectiveOperation[] = ["read"],
-  extra: Partial<Pick<McpRiskAdvice, "appearsIrreversible" | "requiresNetwork">> = {},
+  extra: Partial<
+    Pick<McpRiskAdvice, "appearsIrreversible" | "requiresNetwork">
+  > = {},
 ): McpRiskAdvice {
   return {
     baseline: severity,

@@ -1,87 +1,185 @@
 import Link from "next/link";
 import { APP_INFO } from "@/lib/version";
+import { COMMIT_SHA } from "@/components/evidence/EvidenceBadge";
+import { TestTube, Shield, BookOpen, ExternalLink, AlertTriangle } from "lucide-react";
+
+export const metadata = {
+  title: "RTQ Overview",
+  description: "Introduction to RTQ pipeline, zero-npm-runtime-dependency packages, and evidence-backed security.",
+};
 
 export default function OverviewPage() {
   return (
-    <div>
-      <div className="mb-12">
-        <p className="mb-4 text-[10px] font-black uppercase tracking-[0.5em] text-sky-400">Getting Started</p>
-        <h1 className="mb-4 text-4xl font-black tracking-tight text-white">RTQ Overview</h1>
-        <p className="text-lg text-white/50">
-          RTQ is a dependency-free, risk-adaptive capability-security runtime.
-          Every operation is an explicitly registered capability; every
-          authorization is a short-lived, single-use, cryptographically-signed
-          ticket.
+    <div className="space-y-10">
+      <div>
+        <p className="mb-3 text-[10px] font-mono font-bold uppercase tracking-[0.5em] text-sky-400">
+          Getting Started &bull; Overview
+        </p>
+        <h1 className="text-3xl font-black tracking-tight text-white md:text-5xl">
+          RTQ Overview
+        </h1>
+        <p className="mt-4 text-base text-white/60 leading-relaxed">
+          RTQ is an experimental (Alpha) capability-security runtime for autonomous agents and tools.
+          Security-critical packages declare zero third-party npm runtime dependencies. Every operation
+          requires an explicitly registered capability; authorizations are short-lived, single-use,
+          cryptographically-signed tickets.
         </p>
       </div>
 
-      <h2 className="mb-4 text-2xl font-black text-white">Core Pipeline</h2>
-      <div className="mb-8 rounded-2xl border border-white/5 bg-white/[0.02] p-6 font-mono text-xs leading-relaxed text-white/50">
-        <span className="text-sky-400">Command</span> → Capability (registered) → Risk (authoritative) → Policy (default-deny)
-        <br />&nbsp;&nbsp;&nbsp;→ Clarification → Approval (human/device) → Ticket (signed, single-use)
-        <br />&nbsp;&nbsp;&nbsp;→ Execution (OS-sandboxed) → Audit (redacted)
-      </div>
-
-      <h2 className="mb-4 text-2xl font-black text-white">Packages</h2>
-      <div className="mb-8 grid gap-3 md:grid-cols-2">
-        {[
-          ["@rtq/core", "Security-model types, registry, ticket store"],
-          ["@rtq/risk", "Authoritative risk engine"],
-          ["@rtq/policy", "Default-deny declarative rules"],
-          ["@rtq/clarification", "Structured questions for missing params"],
-          ["@rtq/approval", "Strategies + QR/mobile challenge-response"],
-          ["@rtq/sandbox", "macOS Seatbelt, Linux bubblewrap, Windows AppContainer"],
-          ["@rtq/audit", "Structured, redacted events"],
-          ["@rtq/security", "Pipeline façade (createRTQ)"],
-          ["@rtq/crypto", "Canonical JSON, HMAC-SHA256, constant-time compare"],
-          ["@rtq/cli", "Actionable operator tooling"],
-        ].map(([pkg, desc]) => (
-          <div key={pkg} className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
-            <code className="text-xs font-bold text-sky-400">{pkg}</code>
-            <p className="mt-1 text-xs text-white/40">{desc}</p>
-          </div>
-        ))}
-      </div>
-
-      <h2 className="mb-4 text-2xl font-black text-white">Quick Start</h2>
-      <div className="mb-8 rounded-2xl border border-white/5 bg-white/[0.02] p-6 font-mono text-xs leading-relaxed text-white/50">
-        <span className="text-white/30"># Install</span><br />
-        npm install @rtq/security @rtq/core @rtq/risk @rtq/policy<br /><br />
-        <span className="text-white/30"># Register a capability</span><br />
-        <span className="text-sky-400">import</span> {"{ createRTQ }"} <span className="text-sky-400">from</span> <span className="text-emerald-400">&quot;@rtq/security&quot;</span>;<br /><br />
-        const rtq = createRTQ({"{"} signingKey: process.env.RTQ_SIGNING_KEY! {"}"});<br /><br />
-        rtq.registerCapability({"{"}<br />
-        &nbsp;&nbsp;name: &quot;files.read&quot;,<br />
-        &nbsp;&nbsp;version: 1,<br />
-        &nbsp;&nbsp;description: &quot;Read a file inside the workspace&quot;,<br />
-        &nbsp;&nbsp;inputSchema: {"{"} type: &quot;object&quot;, properties: {"{"} path: {"{"} type: &quot;string&quot; {"}"} {"}"}, required: [&quot;path&quot;] {"}"},<br />
-        &nbsp;&nbsp;risk: {"{"} base: &quot;low&quot; {"}"},<br />
-        &nbsp;&nbsp;execute: <span className="text-sky-400">async</span> (ctx, input) =&gt; {"{"} ok: <span className="text-sky-400">true</span>, data: {"{"} input {"}"} {"}"},<br />
-        {"}"});
-      </div>
-
-      <h2 className="mb-4 text-2xl font-black text-white">Design Principles</h2>
-      <ul className="mb-8 space-y-3 text-sm text-white/50">
-        <li className="flex gap-3"><span className="text-sky-400">•</span> <strong className="text-white">Dependency-free:</strong> Zero npm dependencies in security-critical packages.</li>
-        <li className="flex gap-3"><span className="text-sky-400">•</span> <strong className="text-white">Fail-closed:</strong> Missing rule = denial. No silent fallback to allow.</li>
-        <li className="flex gap-3"><span className="text-sky-400">•</span> <strong className="text-white">Authoritative risk:</strong> Caller claims can never lower risk. RTQ computes it.</li>
-        <li className="flex gap-3"><span className="text-sky-400">•</span> <strong className="text-white">Single-use tickets:</strong> HMAC-SHA256, bound to exact operation. Replay rejected.</li>
-        <li className="flex gap-3"><span className="text-sky-400">•</span> <strong className="text-white">OS sandboxing:</strong> Every execution runs in a platform-native sandbox.</li>
-      </ul>
-
-      <div className="mt-12 rounded-2xl border border-white/5 bg-white/[0.02] p-6">
-        <p className="mb-4 text-xs font-black uppercase tracking-wider text-white/30">Next Steps</p>
-        <div className="flex flex-wrap gap-3">
-          <Link href="/docs/security-overview" className="rounded-xl border border-sky-500/20 bg-sky-500/5 px-4 py-2 text-xs font-bold text-sky-400 transition hover:bg-sky-500/20">
-            Security Overview →
-          </Link>
-          <Link href="/docs/threat-model" className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold text-white/60 transition hover:bg-white/10">
-            Threat Model →
-          </Link>
-          <Link href="/docs/verification-matrix" className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold text-white/60 transition hover:bg-white/10">
-            Verification Matrix →
-          </Link>
+      {/* Alpha Status Banner */}
+      <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 text-xs text-amber-200/90 leading-relaxed flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center gap-2.5">
+          <AlertTriangle size={15} className="text-amber-400 shrink-0" />
+          <span>
+            <strong>Alpha Software:</strong> RTQ has not undergone an independent security audit. All
+            claims link to automated tests pinned at commit <code className="text-white font-mono">{COMMIT_SHA}</code>.
+          </span>
         </div>
+        <Link
+          href="/docs/evidence"
+          className="font-mono font-bold text-sky-400 hover:text-sky-300 underline"
+        >
+          View Evidence &rarr;
+        </Link>
+      </div>
+
+      <div>
+        <h2 className="text-xl font-bold text-white mb-4">Core Pipeline</h2>
+        <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-5 font-mono text-xs leading-relaxed text-white/60">
+          <span className="text-sky-400">Command</span> &rarr;{" "}
+          <span className="text-white/80">Capability</span> (registered) &rarr;{" "}
+          <span className="text-white/80">Risk</span> (authoritative) &rarr;{" "}
+          <span className="text-white/80">Policy</span> (default-deny)
+          <br />
+          &nbsp;&nbsp;&nbsp;&rarr; <span className="text-white/80">Clarification</span> &rarr;{" "}
+          <span className="text-white/80">Approval</span> (challenge-response) &rarr;{" "}
+          <span className="text-white/80">Ticket</span> (signed, single-use)
+          <br />
+          &nbsp;&nbsp;&nbsp;&rarr; <span className="text-white/80">Execution</span> (OS-sandboxed) &rarr;{" "}
+          <span className="text-white/80">Audit</span> (redacted)
+        </div>
+      </div>
+
+      <div>
+        <h2 className="text-xl font-bold text-white mb-4">Packages</h2>
+        <div className="grid gap-3 md:grid-cols-2 text-xs">
+          {[
+            ["@rtq/core", "Security-model types, capability registry, atomic ticket store (0 npm deps)"],
+            ["@rtq/risk", "Authoritative risk engine; ignores caller demotion attempts (0 npm deps)"],
+            ["@rtq/policy", "Default-deny declarative rule evaluator (0 npm deps)"],
+            ["@rtq/crypto", "RFC 8785 canonical JSON, HMAC-SHA256, constant-time compare (0 npm deps)"],
+            ["@rtq/approval", "Verification strategies + QR/mobile challenge-response"],
+            ["@rtq/sandbox", "macOS Seatbelt, Linux bubblewrap, Windows AppContainer wrappers"],
+            ["@rtq/audit", "Structured, HMAC-integrity redacted event logging"],
+            ["@rtq/clarification", "Structured questions for missing parameters with timeout"],
+            ["@rtq/security", "Pipeline façade (createRTQ) unifying the security model"],
+            ["@rtq/cli", "Operator tooling, verification suites, and sandbox test harnesses"],
+          ].map(([pkg, desc]) => (
+            <div key={pkg} className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
+              <code className="text-xs font-bold text-sky-400 font-mono">{pkg}</code>
+              <p className="mt-1 text-white/50">{desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h2 className="text-xl font-bold text-white mb-4">Quick Start</h2>
+        <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-5 font-mono text-xs leading-relaxed text-white/60">
+          <span className="text-white/30"># Install core security packages</span>
+          <br />
+          npm install @rtq/security @rtq/core @rtq/risk @rtq/policy
+          <br />
+          <br />
+          <span className="text-white/30"># Register a capability</span>
+          <br />
+          <span className="text-sky-400">import</span> &#123; createRTQ &#125;{" "}
+          <span className="text-sky-400">from</span>{" "}
+          <span className="text-emerald-400">&quot;@rtq/security&quot;</span>;
+          <br />
+          <br />
+          const rtq = createRTQ(&#123; signingKey: process.env.RTQ_SIGNING_KEY! &#125;);
+          <br />
+          <br />
+          rtq.registerCapability(&#123;
+          <br />
+          &nbsp;&nbsp;name: &quot;files.read&quot;,
+          <br />
+          &nbsp;&nbsp;version: 1,
+          <br />
+          &nbsp;&nbsp;description: &quot;Read a file inside the workspace&quot;,
+          <br />
+          &nbsp;&nbsp;inputSchema: &#123; type: &quot;object&quot;, properties: &#123; path: &#123; type: &quot;string&quot; &#125; &#125;, required: [&quot;path&quot;] &#125;,
+          <br />
+          &nbsp;&nbsp;risk: &#123; base: &quot;low&quot; &#125;,
+          <br />
+          &nbsp;&nbsp;execute: <span className="text-sky-400">async</span> (ctx, input) =&gt; (&#123; ok: <span className="text-sky-400">true</span>, data: &#123; input &#125; &#125;),
+          <br />
+          &#125;);
+        </div>
+      </div>
+
+      <div>
+        <h2 className="text-xl font-bold text-white mb-4">Design Principles</h2>
+        <ul className="space-y-3 text-xs text-white/60">
+          <li className="flex gap-2.5">
+            <span className="text-sky-400">&bull;</span>
+            <span>
+              <strong className="text-white">Zero npm runtime dependencies:</strong> Security-critical packages
+              declare 0 external npm dependencies, minimizing supply-chain attack surface.
+            </span>
+          </li>
+          <li className="flex gap-2.5">
+            <span className="text-sky-400">&bull;</span>
+            <span>
+              <strong className="text-white">Fail-closed:</strong> Missing policy rules evaluate to denial (INV-03).
+              Missing sandbox backends halt execution without silent fallback.
+            </span>
+          </li>
+          <li className="flex gap-2.5">
+            <span className="text-sky-400">&bull;</span>
+            <span>
+              <strong className="text-white">Authoritative risk:</strong> Caller claims cannot lower risk in tested
+              authorization paths (INV-04).
+            </span>
+          </li>
+          <li className="flex gap-2.5">
+            <span className="text-sky-400">&bull;</span>
+            <span>
+              <strong className="text-white">Single-use tickets:</strong> HMAC-SHA256, bound to exact operation parameters.
+              Replay attempts return ok: false in tested redemption paths (INV-09).
+            </span>
+          </li>
+          <li className="flex gap-2.5">
+            <span className="text-sky-400">&bull;</span>
+            <span>
+              <strong className="text-white">Platform sandbox delegation:</strong> Execution containment is passed
+              to platform security mechanisms (macOS Seatbelt, Linux bubblewrap, Windows AppContainer).
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <div className="flex flex-wrap gap-4 border-t border-white/10 pt-6">
+        <Link
+          href="/docs/evidence"
+          className="rounded-xl border border-sky-500/20 bg-sky-500/10 px-4 py-2.5 font-mono text-xs font-bold text-sky-400 hover:bg-sky-500/20 transition inline-flex items-center gap-1.5"
+        >
+          <TestTube size={13} />
+          <span>Security Evidence &rarr;</span>
+        </Link>
+        <Link
+          href="/docs/threat-model"
+          className="rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 font-mono text-xs font-bold text-white/70 hover:bg-white/10 hover:text-white transition"
+        >
+          Threat Model &amp; Limitations &rarr;
+        </Link>
+        <Link
+          href="/docs/verification-matrix"
+          className="rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 font-mono text-xs font-bold text-white/70 hover:bg-white/10 hover:text-white transition"
+        >
+          12 Tested Properties &rarr;
+        </Link>
       </div>
     </div>
   );

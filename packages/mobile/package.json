@@ -15,5 +15,13 @@
     "@rtq/approval": "0.1.0",
     "@rtq/core": "0.1.0",
     "@rtq/crypto": "0.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Latestinssan/RTQ.git",
+    "directory": "packages/mobile"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

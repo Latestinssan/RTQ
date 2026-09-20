@@ -13,7 +13,9 @@ describe("matchesMcpPattern", () => {
   });
 
   it("exact match", () => {
-    expect(matchesMcpPattern("mcp://srv1/toolA", "mcp://srv1/toolA")).toBe(true);
+    expect(matchesMcpPattern("mcp://srv1/toolA", "mcp://srv1/toolA")).toBe(
+      true,
+    );
   });
 
   it("prefix match with trailing star", () => {
@@ -25,11 +27,15 @@ describe("matchesMcpPattern", () => {
   });
 
   it("no match without star", () => {
-    expect(matchesMcpPattern("mcp://srv1/toolA", "mcp://srv1/toolB")).toBe(false);
+    expect(matchesMcpPattern("mcp://srv1/toolA", "mcp://srv1/toolB")).toBe(
+      false,
+    );
   });
 
   it("prefix star matches trailing characters", () => {
-    expect(matchesMcpPattern("mcp://srv1/tool*", "mcp://srv1/toolA")).toBe(true);
+    expect(matchesMcpPattern("mcp://srv1/tool*", "mcp://srv1/toolA")).toBe(
+      true,
+    );
   });
 });
 
@@ -54,9 +60,7 @@ describe("McpPolicyEngine", () => {
           reason: "read tools OK",
         },
       ],
-      allowedEffectiveOperations: new Map([
-        ["read", ["mcp://*/*"]],
-      ]),
+      allowedEffectiveOperations: new Map([["read", ["mcp://*/*"]]]),
     });
     const result = engine.evaluate({
       capabilityName: "mcp://srv1/read_file",
@@ -114,9 +118,7 @@ describe("McpPolicyEngine", () => {
     const engine = new McpPolicyEngine({
       rules: [{ instrument: "tool", pattern: "*", allow: true }],
       allowedTenants: new Set(["tenant-a"]),
-      allowedEffectiveOperations: new Map([
-        ["read", ["mcp://*/*"]],
-      ]),
+      allowedEffectiveOperations: new Map([["read", ["mcp://*/*"]]]),
     });
     const result = engine.evaluate({
       capabilityName: "mcp://srv1/test",

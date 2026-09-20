@@ -27,24 +27,24 @@ normalization idempotency before any tool becomes invocable.
 
 This package implements and tests:
 
-| Concern                                                                | Status                                       |
-| ---------------------------------------------------------------------- | -------------------------------------------- |
-| JSON-RPC 2.0 wire protocol (parse/build, size limits, strict envelope) | ✅ implemented & tested                      |
-| Protocol negotiation (2024-11-05, 2025-06-18)                          | ✅ implemented & tested                      |
-| In-memory transport (embedded reference server)                        | ✅ implemented & tested                      |
-| stdio transport (local process, optional OS sandbox, fail-closed)      | ✅ implemented & tested                      |
-| Streamable-HTTP transport (JSON + SSE, TLS by default)                 | ✅ implemented & tested                      |
-| Reference MCP server (for local embedding & contract tests)            | ✅ implemented & tested                      |
-| Tool schema normalization & hardening (fail-closed on $ref etc.)       | ✅ implemented & tested                      |
-| Result normalization (size/depth limits, redaction, advisory flags)    | ✅ implemented & tested                      |
-| Server/tool registration records (trust state, schema hashes, epoch)   | ✅ implemented & tested                      |
-| Credential isolation (scoped vault, never returned to server)          | ✅ implemented & tested                      |
-| Policy evaluation on MCP calls (fail-closed, transport/tenant gates)   | ✅ implemented & tested                      |
-| Risk advisory (raise-only, operation classification)                   | ✅ implemented & tested                      |
-| McpGateway (full invoke pipeline: validate→risk→policy→authorize→exec) | ✅ implemented & tested                      |
-| Contract-check runner (schema completeness, normalization idempotency) | ✅ implemented & tested                      |
-| CLI admin commands (`rtq mcp servers/tools/contracts/revoke/metrics`)  | ✅ implemented                               |
-| Observability (metrics snapshot per 46.33)                             | ✅ implemented (in gateway.getMetrics())     |
+| Concern                                                                | Status                                   |
+| ---------------------------------------------------------------------- | ---------------------------------------- |
+| JSON-RPC 2.0 wire protocol (parse/build, size limits, strict envelope) | ✅ implemented & tested                  |
+| Protocol negotiation (2024-11-05, 2025-06-18)                          | ✅ implemented & tested                  |
+| In-memory transport (embedded reference server)                        | ✅ implemented & tested                  |
+| stdio transport (local process, optional OS sandbox, fail-closed)      | ✅ implemented & tested                  |
+| Streamable-HTTP transport (JSON + SSE, TLS by default)                 | ✅ implemented & tested                  |
+| Reference MCP server (for local embedding & contract tests)            | ✅ implemented & tested                  |
+| Tool schema normalization & hardening (fail-closed on $ref etc.)       | ✅ implemented & tested                  |
+| Result normalization (size/depth limits, redaction, advisory flags)    | ✅ implemented & tested                  |
+| Server/tool registration records (trust state, schema hashes, epoch)   | ✅ implemented & tested                  |
+| Credential isolation (scoped vault, never returned to server)          | ✅ implemented & tested                  |
+| Policy evaluation on MCP calls (fail-closed, transport/tenant gates)   | ✅ implemented & tested                  |
+| Risk advisory (raise-only, operation classification)                   | ✅ implemented & tested                  |
+| McpGateway (full invoke pipeline: validate→risk→policy→authorize→exec) | ✅ implemented & tested                  |
+| Contract-check runner (schema completeness, normalization idempotency) | ✅ implemented & tested                  |
+| CLI admin commands (`rtq mcp servers/tools/contracts/revoke/metrics`)  | ✅ implemented                           |
+| Observability (metrics snapshot per 46.33)                             | ✅ implemented (in gateway.getMetrics()) |
 
 Legend: ✅ **implemented & tested** (in `tests/mcp/`). No claim of
 completeness beyond what the tests prove.
@@ -72,8 +72,12 @@ packages/mcp/src/
 
 ```ts
 import {
-  McpGateway, McpRegistry, McpPolicyEngine, McpRiskAdvisor,
-  InMemoryConnection, McpReferenceServer,
+  McpGateway,
+  McpRegistry,
+  McpPolicyEngine,
+  McpRiskAdvisor,
+  InMemoryConnection,
+  McpReferenceServer,
 } from "@rtq/mcp";
 
 // 1. Create the gateway with RTQ-injected authorize/execute callbacks.

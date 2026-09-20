@@ -10,5 +10,13 @@
   ],
   "scripts": {
     "build": "tsc -b tsconfig.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Latestinssan/RTQ.git",
+    "directory": "packages/crypto"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

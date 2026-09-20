@@ -281,8 +281,7 @@ export class McpPolicyEngine {
     }
 
     // ---- Effective-operation allow/deny (46.25) ----
-    const effectiveOps =
-      params.riskAdvice?.effectiveOperations ?? ["unknown"];
+    const effectiveOps = params.riskAdvice?.effectiveOperations ?? ["unknown"];
     for (const op of effectiveOps) {
       if (op === "unknown") {
         return this.deny(

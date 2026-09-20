@@ -28,8 +28,16 @@ function makeToolMeta(over: Partial<McpToolMeta> = {}): McpToolMeta {
   return {
     name,
     description,
-    rawSchema: { type: "object", properties: { path: { type: "string" } }, required: ["path"] },
-    normalizedSchema: { type: "object", properties: { path: { type: "string" } }, required: ["path"] },
+    rawSchema: {
+      type: "object",
+      properties: { path: { type: "string" } },
+      required: ["path"],
+    },
+    normalizedSchema: {
+      type: "object",
+      properties: { path: { type: "string" } },
+      required: ["path"],
+    },
     schemaHash: `hash_${name}`,
     protocolVersion: "2025-06-18",
     incomplete: false,
@@ -37,7 +45,9 @@ function makeToolMeta(over: Partial<McpToolMeta> = {}): McpToolMeta {
   };
 }
 
-function mockConnection(overrides: Record<string, unknown> = {}): McpConnection {
+function mockConnection(
+  overrides: Record<string, unknown> = {},
+): McpConnection {
   return {
     kind: "in-memory",
     protocolLimits: { maxMessageSizeBytes: 1024 * 1024 },
@@ -49,7 +59,14 @@ function mockConnection(overrides: Record<string, unknown> = {}): McpConnection 
   } as unknown as McpConnection;
 }
 
-function makeGatewayConfig(overrides: Partial<McpGatewayConfig> = {}): McpGatewayConfig & { _authorizeCalls: any[]; _executeCalls: any[]; _tickets: Map<string, unknown>; _auditEvents: any[] } {
+function makeGatewayConfig(
+  overrides: Partial<McpGatewayConfig> = {},
+): McpGatewayConfig & {
+  _authorizeCalls: any[];
+  _executeCalls: any[];
+  _tickets: Map<string, unknown>;
+  _auditEvents: any[];
+} {
   const authorizeCalls: any[] = [];
   const executeCalls: any[] = [];
   const tickets = new Map<string, unknown>();
@@ -68,7 +85,10 @@ function makeGatewayConfig(overrides: Partial<McpGatewayConfig> = {}): McpGatewa
     riskAdvisor: new McpRiskAdvisor(),
     authorize: vi.fn().mockImplementation(async (params) => {
       authorizeCalls.push(params);
-      return { ticketId: `tkt_${authorizeCalls.length}`, approvalRequired: false };
+      return {
+        ticketId: `tkt_${authorizeCalls.length}`,
+        approvalRequired: false,
+      };
     }),
     execute: vi.fn().mockImplementation(async (ticketId) => {
       executeCalls.push(ticketId);
@@ -76,10 +96,14 @@ function makeGatewayConfig(overrides: Partial<McpGatewayConfig> = {}): McpGatewa
     }),
     tickets: {
       peek: (id: string) => tickets.get(id),
-      park: (id: string, v: unknown) => { tickets.set(id, v); },
+      park: (id: string, v: unknown) => {
+        tickets.set(id, v);
+      },
     },
     defaultLimits: { maxResultSizeBytes: 64 * 1024 },
-    onAudit: (event: string, data: Record<string, unknown>) => { auditEvents.push({ event, ...data }); },
+    onAudit: (event: string, data: Record<string, unknown>) => {
+      auditEvents.push({ event, ...data });
+    },
     _authorizeCalls: authorizeCalls,
     _executeCalls: executeCalls,
     _tickets: tickets,
@@ -97,7 +121,9 @@ describe("McpGateway", () => {
     const cfg = makeGatewayConfig();
     const gw = new McpGateway(cfg);
     const conn = mockConnection();
-    const sessionId = await gw.connect("srv-1", conn, { config: DEFAULT_SERVER });
+    const sessionId = await gw.connect("srv-1", conn, {
+      config: DEFAULT_SERVER,
+    });
     expect(sessionId).toMatch(/^ses_/);
     expect(gw.listSessions()).toHaveLength(1);
     expect(cfg.registry.listServers()).toHaveLength(1);
@@ -106,7 +132,9 @@ describe("McpGateway", () => {
   it("disconnect removes session and revokes server", async () => {
     const cfg = makeGatewayConfig();
     const gw = new McpGateway(cfg);
-    const sessionId = await gw.connect("srv-1", conn(), { config: DEFAULT_SERVER });
+    const sessionId = await gw.connect("srv-1", conn(), {
+      config: DEFAULT_SERVER,
+    });
     await gw.disconnect(sessionId);
     expect(gw.listSessions()).toHaveLength(0);
   });
@@ -123,12 +151,33 @@ describe("McpGateway", () => {
     const conn = mockConnection({
       request: vi.fn().mockResolvedValue({
         tools: [
-          { name: "read_file", description: "Reads a file", inputSchema: { type: "object", properties: { path: { type: "string" } }, required: ["path"] } },
-          { name: "write_file", description: "Writes a file", inputSchema: { type: "object", properties: { path: { type: "string" }, content: { type: "string" } }, required: ["path", "content"] } },
+          {
+            name: "read_file",
+            description: "Reads a file",
+            inputSchema: {
+              type: "object",
+              properties: { path: { type: "string" } },
+              required: ["path"],
+            },
+          },
+          {
+            name: "write_file",
+            description: "Writes a file",
+            inputSchema: {
+              type: "object",
+              properties: {
+                path: { type: "string" },
+                content: { type: "string" },
+              },
+              required: ["path", "content"],
+            },
+          },
         ],
       }),
     });
-    const sessionId = await gw.connect("srv-1", conn, { config: DEFAULT_SERVER });
+    const sessionId = await gw.connect("srv-1", conn, {
+      config: DEFAULT_SERVER,
+    });
     const tools = await gw.discover(sessionId);
     expect(tools).toHaveLength(2);
     expect(tools[0].name).toBe("read_file");
@@ -183,7 +232,9 @@ describe("McpGateway", () => {
 
   it("invoke returns approval_required when needed", async () => {
     const cfg = makeGatewayConfig({
-      authorize: vi.fn().mockResolvedValue({ ticketId: "tkt_1", approvalRequired: true }),
+      authorize: vi
+        .fn()
+        .mockResolvedValue({ ticketId: "tkt_1", approvalRequired: true }),
     });
     const gw = new McpGateway(cfg);
     await gw.connect("srv-1", conn(), { config: DEFAULT_SERVER });
@@ -196,7 +247,9 @@ describe("McpGateway", () => {
 
   it("submitApproval executes when approved", async () => {
     const cfg = makeGatewayConfig({
-      authorize: vi.fn().mockResolvedValue({ ticketId: "tkt_1", approvalRequired: true }),
+      authorize: vi
+        .fn()
+        .mockResolvedValue({ ticketId: "tkt_1", approvalRequired: true }),
     });
     const gw = new McpGateway(cfg);
     await gw.connect("srv-1", conn(), { config: DEFAULT_SERVER });
@@ -211,7 +264,9 @@ describe("McpGateway", () => {
 
   it("submitApproval denies when rejected", async () => {
     const cfg = makeGatewayConfig({
-      authorize: vi.fn().mockResolvedValue({ ticketId: "tkt_1", approvalRequired: true }),
+      authorize: vi
+        .fn()
+        .mockResolvedValue({ ticketId: "tkt_1", approvalRequired: true }),
     });
     const gw = new McpGateway(cfg);
     await gw.connect("srv-1", conn(), { config: DEFAULT_SERVER });
@@ -256,7 +311,9 @@ describe("McpGateway", () => {
         tools: [{ name: "tool_a", description: "Tool A", inputSchema: {} }],
       }),
     });
-    const sessionId = await gw.connect("srv-1", conn, { config: DEFAULT_SERVER });
+    const sessionId = await gw.connect("srv-1", conn, {
+      config: DEFAULT_SERVER,
+    });
     await gw.discover(sessionId);
     expect(gw.listTools(sessionId)).toHaveLength(1);
     expect(gw.getTool(sessionId, "tool_a")).toBeDefined();
@@ -267,7 +324,9 @@ describe("McpGateway", () => {
     const cfg = makeGatewayConfig();
     const gw = new McpGateway(cfg);
     await gw.connect("srv-1", conn(), { config: DEFAULT_SERVER });
-    expect(cfg._auditEvents.some((e: any) => e.event === "mcp.connected")).toBe(true);
+    expect(cfg._auditEvents.some((e: any) => e.event === "mcp.connected")).toBe(
+      true,
+    );
   });
 
   function conn(overrides: Record<string, unknown> = {}): McpConnection {

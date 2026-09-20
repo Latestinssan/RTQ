@@ -11,9 +11,10 @@ interface SearchResult {
 
 const PAGES: SearchResult[] = [
   { title: "Overview", href: "/docs/overview", description: "RTQ overview — pipeline, packages, getting started" },
+  { title: "Evidence & Verification", href: "/docs/evidence", description: "Evidence chains: Claim -> Implementation -> Test -> CI Run -> Commit" },
   { title: "Security Overview", href: "/docs/security-overview", description: "Pipeline, core principles, quick example" },
   { title: "Threat Model", href: "/docs/threat-model", description: "Trust boundaries, threats, mitigations, honest limitations" },
-  { title: "Verification Matrix", href: "/docs/verification-matrix", description: "Twelve automated invariants, platform gating, test suites" },
+  { title: "Verification Matrix", href: "/docs/verification-matrix", description: "Twelve automated properties tested in CI, platform gating" },
   { title: "Verification & Traceability", href: "/docs/verification-traceability", description: "Source file:line citations for every security claim" },
   { title: "Platform Support", href: "/docs/platform-support", description: "macOS Seatbelt, Linux bwrap, Windows AppContainer" },
   { title: "Aartiq Integration", href: "/docs/aartiq-integration", description: "How to bring RTQ to an Aartiq-style federated MCP app" },

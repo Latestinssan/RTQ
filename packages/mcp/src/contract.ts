@@ -17,12 +17,13 @@
  * they MUST be run before the first invocation of any newly-registered tool.
  */
 
-import type {
-  McpToolRecord,
-  McpSeverity,
-} from "./types";
+import type { McpToolRecord, McpSeverity } from "./types";
 import { McpRegistry } from "./registry";
-import { normalizeToolSchema, computeToolSchemaHash, validateToolArguments } from "./schemas";
+import {
+  normalizeToolSchema,
+  computeToolSchemaHash,
+  validateToolArguments,
+} from "./schemas";
 
 // ---------------------------------------------------------------------------
 // Result types
@@ -77,7 +78,9 @@ function checkSchemaCompleteness(tool: McpToolRecord): ContractCheckResult {
  * 46.29 #2: Normalization idempotency — re-normalizing the raw schema
  * produces the same hash as the stored one.
  */
-function checkNormalizationIdempotency(tool: McpToolRecord): ContractCheckResult {
+function checkNormalizationIdempotency(
+  tool: McpToolRecord,
+): ContractCheckResult {
   const reNormalized = normalizeToolSchema(tool.normalizedSchema);
   const reHash = computeToolSchemaHash({
     name: tool.name,
@@ -122,12 +125,9 @@ function checkArgumentValidation(tool: McpToolRecord): ContractCheckResult {
   const passed = !invalidResult.valid;
   return {
     checkId: "argument_validation",
-    description:
-      "Prototype-polluting arguments must be rejected (46.29 #3)",
+    description: "Prototype-polluting arguments must be rejected (46.29 #3)",
     passed,
-    reason: passed
-      ? ""
-      : "Prototype-polluting arguments were not rejected",
+    reason: passed ? "" : "Prototype-polluting arguments were not rejected",
   };
 }
 
@@ -148,8 +148,7 @@ function checkCapabilityNames(tool: McpToolRecord): ContractCheckResult {
   }
   // Allow mcp:// URIs or plain identifiers.
   const wellFormed =
-    capability.startsWith("mcp://") ||
-    /^[a-zA-Z0-9._-]+$/.test(capability);
+    capability.startsWith("mcp://") || /^[a-zA-Z0-9._-]+$/.test(capability);
   return {
     checkId: "capability_name",
     description: "Capability name must be well-formed (46.29 #4)",
@@ -193,9 +192,7 @@ const ALL_CHECKS = [
  * Run all contract checks for a single tool. Returns a report and marks
  * `needsReevaluation` on the tool record when any check fails.
  */
-export function runContractCheck(
-  tool: McpToolRecord,
-): ContractCheckReport {
+export function runContractCheck(tool: McpToolRecord): ContractCheckReport {
   const checks = ALL_CHECKS.map((fn) => fn(tool));
   const passed = checks.every((c) => c.passed);
 

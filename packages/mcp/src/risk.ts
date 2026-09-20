@@ -31,13 +31,7 @@ import type {
 
 /** Operation classes RTQ binds to a tool's effective authorization (46.25). */
 export type McpEffectiveOperation =
-  | "read"
-  | "write"
-  | "admin"
-  | "system"
-  | "network"
-  | "credential"
-  | "unknown";
+  "read" | "write" | "admin" | "system" | "network" | "credential" | "unknown";
 
 /** One advisory risk contribution for audit + clarification rendering. */
 export interface McpRiskContribution {
@@ -80,10 +74,7 @@ const SEVERITY_FROM_RANK: readonly McpSeverity[] = [
 ];
 
 function clampSeverity(base: number, delta: number): McpSeverity {
-  const rank = Math.min(
-    3,
-    Math.max(0, base + delta),
-  );
+  const rank = Math.min(3, Math.max(0, base + delta));
   return SEVERITY_FROM_RANK[rank];
 }
 
@@ -121,7 +112,8 @@ export function classifyEffectiveOperations(
   requiresNetwork: boolean;
   strongestReason?: string;
 } {
-  const tokens = signals.tokens ?? extractTokens(signals.name, signals.description);
+  const tokens =
+    signals.tokens ?? extractTokens(signals.name, signals.description);
   const operations = new Set<McpEffectiveOperation>(["unknown"]);
   let appearsIrreversible = false;
   let requiresNetwork = false; // advisories default false; transports raise below
@@ -136,23 +128,45 @@ export function classifyEffectiveOperations(
     if (transport === "http") requiresNetwork = true;
   }
 
-  if (signals.declaredCapabilities?.some((c) => /network|fetch|http/i.test(c))) {
+  if (
+    signals.declaredCapabilities?.some((c) => /network|fetch|http/i.test(c))
+  ) {
     requiresNetwork = true;
     operations.add("network");
   }
 
   // Irreversibility advisory (46.14): destructive/delete/reset verbs.
-  if (hasToken(tokens, /^(delete|remove|unlink|destroy|reset|drop|clear|overwrite|truncate|shutdown|reboot|restart)$/)) {
+  if (
+    hasToken(
+      tokens,
+      /^(delete|remove|unlink|destroy|reset|drop|clear|overwrite|truncate|shutdown|reboot|restart)$/,
+    )
+  ) {
     appearsIrreversible = true;
     operations.add("write");
-  } else if (hasToken(tokens, /^(write|create|put|post|insert|update|patch|set|append|upload|send)$/)) {
+  } else if (
+    hasToken(
+      tokens,
+      /^(write|create|put|post|insert|update|patch|set|append|upload|send)$/,
+    )
+  ) {
     operations.add("write");
-  } else if (hasToken(tokens, /^(read|get|list|query|describe|search|inspect|fetch|peek)$/)) {
+  } else if (
+    hasToken(
+      tokens,
+      /^(read|get|list|query|describe|search|inspect|fetch|peek)$/,
+    )
+  ) {
     operations.add("read");
   }
 
   // Credential/admin advisory.
-  if (hasToken(tokens, /^(grant|revoke|rotate|issue|sign|approve|authorize|admin|suspend|block)$/)) {
+  if (
+    hasToken(
+      tokens,
+      /^(grant|revoke|rotate|issue|sign|approve|authorize|admin|suspend|block)$/,
+    )
+  ) {
     operations.add("admin");
     operations.add("credential");
   }
@@ -176,10 +190,7 @@ export function classifyEffectiveOperations(
   };
 }
 
-function extractTokens(
-  name: string,
-  description?: string,
-): readonly string[] {
+function extractTokens(name: string, description?: string): readonly string[] {
   const source = `${name} ${description ?? ""}`;
   return source
     .toLowerCase()
@@ -257,7 +268,8 @@ export class McpRiskAdvisor {
       delta = Math.max(delta, 1);
       contributions.push({
         factor: "credential_adjacent",
-        detail: "Effective operation touches credentials or administrative state",
+        detail:
+          "Effective operation touches credentials or administrative state",
         raisesBy: 1,
       });
     }

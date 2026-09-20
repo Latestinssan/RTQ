@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  InMemoryCredentialVault,
-  type McpCredentialRecord,
-} from "@rtq/mcp";
+import { InMemoryCredentialVault, type McpCredentialRecord } from "@rtq/mcp";
 
 function vault(): InMemoryCredentialVault {
   return new InMemoryCredentialVault();
@@ -63,8 +60,18 @@ describe("InMemoryCredentialVault", () => {
 
   it("revokeScope removes matching scoped credentials", () => {
     const v = vault();
-    v.store({ credential: "k1", credentialClass: "read", serverId: "srv1", toolName: "toolA" });
-    v.store({ credential: "k2", credentialClass: "read", serverId: "srv1", toolName: "toolB" });
+    v.store({
+      credential: "k1",
+      credentialClass: "read",
+      serverId: "srv1",
+      toolName: "toolA",
+    });
+    v.store({
+      credential: "k2",
+      credentialClass: "read",
+      serverId: "srv1",
+      toolName: "toolB",
+    });
 
     const revoked = v.revokeScope({ serverId: "srv1", toolName: "toolA" });
     expect(revoked).toBe(1);
@@ -87,7 +94,9 @@ describe("InMemoryCredentialVault", () => {
   it("onUse callback fires on retrieve", () => {
     let used = false;
     const v = new InMemoryCredentialVault();
-    v.onUse(() => { used = true; });
+    v.onUse(() => {
+      used = true;
+    });
     v.store({ credential: "k1", credentialClass: "read", serverId: "srv1" });
     v.retrieve({ serverId: "srv1" });
     expect(used).toBe(true);
@@ -96,8 +105,14 @@ describe("InMemoryCredentialVault", () => {
   it("onRevoke callback fires on revoke", () => {
     let revokedCb: McpCredentialRecord | undefined;
     const v = new InMemoryCredentialVault();
-    v.onRevoke((r) => { revokedCb = r; });
-    const rec = v.store({ credential: "k1", credentialClass: "read", serverId: "srv1" });
+    v.onRevoke((r) => {
+      revokedCb = r;
+    });
+    const rec = v.store({
+      credential: "k1",
+      credentialClass: "read",
+      serverId: "srv1",
+    });
     v.revoke(rec.id);
     expect(revokedCb).toBeDefined();
     expect(revokedCb!.id).toBe(rec.id);
@@ -105,8 +120,20 @@ describe("InMemoryCredentialVault", () => {
 
   it("purgeExpired removes expired credentials", () => {
     const v = vault();
-    v.store({ credential: "k1", credentialClass: "read", serverId: "srv1", toolName: "toolA", expiresAt: Date.now() - 10000 });
-    v.store({ credential: "k2", credentialClass: "read", serverId: "srv1", toolName: "toolB", expiresAt: Date.now() + 100000 });
+    v.store({
+      credential: "k1",
+      credentialClass: "read",
+      serverId: "srv1",
+      toolName: "toolA",
+      expiresAt: Date.now() - 10000,
+    });
+    v.store({
+      credential: "k2",
+      credentialClass: "read",
+      serverId: "srv1",
+      toolName: "toolB",
+      expiresAt: Date.now() + 100000,
+    });
     const purged = v.purgeExpired();
     expect(purged).toBe(1);
     expect(v.count()).toBe(1);

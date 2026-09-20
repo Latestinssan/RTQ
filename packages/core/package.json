@@ -14,5 +14,13 @@
   "dependencies": {
     "@rtq/audit": "0.1.0",
     "@rtq/crypto": "0.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Latestinssan/RTQ.git",
+    "directory": "packages/core"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

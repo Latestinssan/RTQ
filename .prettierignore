@@ -6,6 +6,7 @@ dist
 website/node_modules/
 website/.next/
 website/out/
+website-nextra-broken-backup/
 # Flutter app generated output (apps/rtq-mobile)
 apps/rtq-mobile/.dart_tool/
 apps/rtq-mobile/build/

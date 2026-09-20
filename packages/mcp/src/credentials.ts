@@ -166,12 +166,15 @@ export class InMemoryCredentialVault implements McpCredentialVault {
 
   store(options: McpCredentialStoreOptions): McpCredentialRecord {
     // Check for existing credential in the same scope + class; revoke it first
-    const existing = this.findExact({
-      serverId: options.serverId,
-      toolName: options.toolName,
-      agentId: options.agentId,
-      tenant: options.tenant,
-    }, options.credentialClass);
+    const existing = this.findExact(
+      {
+        serverId: options.serverId,
+        toolName: options.toolName,
+        agentId: options.agentId,
+        tenant: options.tenant,
+      },
+      options.credentialClass,
+    );
     if (existing) {
       this.revoke(existing.id);
     }
@@ -211,7 +214,11 @@ export class InMemoryCredentialVault implements McpCredentialVault {
 
     // Fire use callbacks (fire-and-forget)
     for (const cb of this.useCallbacks) {
-      try { cb({ ...best }); } catch { /* callback errors are swallowed */ }
+      try {
+        cb({ ...best });
+      } catch {
+        /* callback errors are swallowed */
+      }
     }
 
     return { ...best };
@@ -223,7 +230,11 @@ export class InMemoryCredentialVault implements McpCredentialVault {
     this.records.delete(id);
 
     for (const cb of this.revokeCallbacks) {
-      try { cb({ ...record }); } catch { /* swallowed */ }
+      try {
+        cb({ ...record });
+      } catch {
+        /* swallowed */
+      }
     }
 
     return { ...record };
@@ -249,7 +260,9 @@ export class InMemoryCredentialVault implements McpCredentialVault {
     if (!scope || Object.keys(scope).length === 0) {
       return [...this.records.values()].map((r) => ({ ...r }));
     }
-    return this.findCandidates(scope as McpCredentialLookupScope).map((r) => ({ ...r }));
+    return this.findCandidates(scope as McpCredentialLookupScope).map((r) => ({
+      ...r,
+    }));
   }
 
   count(): number {
@@ -285,13 +298,30 @@ export class InMemoryCredentialVault implements McpCredentialVault {
 
   // -- Private helpers --
 
-  private findCandidates(scope: McpCredentialLookupScope): McpCredentialRecord[] {
+  private findCandidates(
+    scope: McpCredentialLookupScope,
+  ): McpCredentialRecord[] {
     const result: McpCredentialRecord[] = [];
     for (const r of this.records.values()) {
       if (r.serverId !== scope.serverId) continue;
-      if (scope.agentId !== undefined && r.agentId !== undefined && r.agentId !== scope.agentId) continue;
-      if (scope.toolName !== undefined && r.toolName !== undefined && r.toolName !== scope.toolName) continue;
-      if (scope.tenant !== undefined && r.tenant !== undefined && r.tenant !== scope.tenant) continue;
+      if (
+        scope.agentId !== undefined &&
+        r.agentId !== undefined &&
+        r.agentId !== scope.agentId
+      )
+        continue;
+      if (
+        scope.toolName !== undefined &&
+        r.toolName !== undefined &&
+        r.toolName !== scope.toolName
+      )
+        continue;
+      if (
+        scope.tenant !== undefined &&
+        r.tenant !== undefined &&
+        r.tenant !== scope.tenant
+      )
+        continue;
       result.push(r);
     }
     return result;
@@ -317,15 +347,21 @@ export class InMemoryCredentialVault implements McpCredentialVault {
    * scope field. Non-matching scope values get a high penalty so they sort
    * last (but are already filtered out by `findCandidates`).
    */
-  private specificity(record: McpCredentialRecord, scope: McpCredentialLookupScope): number {
+  private specificity(
+    record: McpCredentialRecord,
+    scope: McpCredentialLookupScope,
+  ): number {
     let score = 0;
     if (record.agentId !== undefined) score += 1;
     if (record.toolName !== undefined) score += 2;
     if (record.tenant !== undefined) score += 4;
     // Prefer exact scope matches
-    if (scope.agentId !== undefined && record.agentId === scope.agentId) score -= 8;
-    if (scope.toolName !== undefined && record.toolName === scope.toolName) score -= 8;
-    if (scope.tenant !== undefined && record.tenant === scope.tenant) score -= 8;
+    if (scope.agentId !== undefined && record.agentId === scope.agentId)
+      score -= 8;
+    if (scope.toolName !== undefined && record.toolName === scope.toolName)
+      score -= 8;
+    if (scope.tenant !== undefined && record.tenant === scope.tenant)
+      score -= 8;
     return score;
   }
 }

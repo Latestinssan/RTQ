@@ -38,8 +38,8 @@ application's weaknesses are explicitly designed out (see
 **RTQ and Aartiq.** RTQ and the audited application (named "Aartiq" on the
 docs site) are **independent, unrelated projects**. RTQ shares none of
 Aartiq's code, tests, or assets, and is a from-scratch, dependency-free
-reimplementation of the same core thesis — *capability and authority are not
-the same thing*. RTQ is designed to be **embeddable in any host** (an
+reimplementation of the same core thesis — _capability and authority are not
+the same thing_. RTQ is designed to be **embeddable in any host** (an
 Aartiq-style bridge, a connector, or a standalone agent), not just Aartiq.
 Nothing in this repository claims that Aartiq currently uses, has migrated to,
 or runs RTQ; the [Aartiq

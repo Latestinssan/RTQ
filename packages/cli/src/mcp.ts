@@ -41,7 +41,10 @@ function printTable(rows: string[][]): void {
   );
   for (const row of rows) {
     process.stdout.write(
-      row.map((c, i) => c.padEnd(widths[i]! + 2)).join("").trimEnd() + "\n",
+      row
+        .map((c, i) => c.padEnd(widths[i]! + 2))
+        .join("")
+        .trimEnd() + "\n",
     );
   }
 }
