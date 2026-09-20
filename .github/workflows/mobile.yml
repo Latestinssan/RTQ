@@ -46,6 +46,11 @@ jobs:
         working-directory: apps/rtq-mobile
     steps:
       - uses: actions/checkout@v4
+      # Pin Java 17: the Flutter/AGP toolchain rejects JDK 25 (see release.yml).
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
       - uses: subosito/flutter-action@v2
         with:
           channel: stable

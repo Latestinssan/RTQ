@@ -1,0 +1,123 @@
+name: Release — signed APK + unsigned IPA
+
+# Produces release artifacts for manual distribution / sideloading:
+#   * Android: a release APK signed with the RTQ keystore (ANDROID_KEYSTORE_* secrets).
+#   * iOS:     an unsigned .ipa (--no-codesign). App Store distribution is a
+#              separate step that requires an Apple Distribution certificate and
+#              provisioning profile, which this repository does not configure.
+#
+# Firebase config (google-services.json / GoogleService-Info.plist) is injected
+# from secrets at build time and never committed to the repository.
+#
+# Secrets required:
+#   GOOGLE_SERVICES_JSON            base64 of android google-services.json
+#   GOOGLE_SERVICE_INFO_PLIST       base64 of ios GoogleService-Info.plist
+#   ANDROID_KEYSTORE_BASE64         base64 of the release .jks keystore
+#   ANDROID_KEYSTORE_PASSWORD       keystore password
+#   ANDROID_KEY_ALIAS               key alias inside the keystore
+#   ANDROID_KEY_PASSWORD            private key password
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  android:
+    name: "Signed release APK"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/rtq-mobile
+    steps:
+      - uses: actions/checkout@v4
+
+      # The Flutter/AGP toolchain rejects JDK 25 (proven locally); pin Java 17.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      - name: "Install release keystore from secrets"
+        run: |
+          mkdir -p "$RUNNER_TEMP/rtq-signing"
+          printf '%s' "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" \
+            | base64 --decode > "$RUNNER_TEMP/rtq-signing/rtq-release.jks"
+          cat > android/key.properties <<EOF
+          storeFile=$RUNNER_TEMP/rtq-signing/rtq-release.jks
+          storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
+          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+          EOF
+
+      - name: "Add Firebase config (google-services.json)"
+        run: |
+          printf '%s' "${{ secrets.GOOGLE_SERVICES_JSON }}" \
+            | base64 --decode > android/app/google-services.json
+
+      - name: "Build signed release APK"
+        run: flutter build apk --release
+
+      - name: "Upload APK artifact"
+        uses: actions/upload-artifact@v4
+        with:
+          name: rtq-android
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+
+  ios:
+    name: "Unsigned release IPA"
+    runs-on: macos-15
+    defaults:
+      run:
+        working-directory: apps/rtq-mobile
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      - name: "Add Firebase config (GoogleService-Info.plist)"
+        run: |
+          printf '%s' "${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}" \
+            | base64 -D > ios/Runner/GoogleService-Info.plist
+
+      - name: "Build IPA (unsigned)"
+        run: flutter build ipa --release --no-codesign
+
+      - name: "Upload IPA artifact"
+        uses: actions/upload-artifact@v4
+        with:
+          name: rtq-ios
+          path: build/ios/ipa/*.ipa
+          if-no-files-found: error
+
+  release:
+    name: "Create GitHub release"
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [android, ios]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: dist/**
+          generate_release_notes: true
