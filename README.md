@@ -4,7 +4,7 @@
 [![GitHub Release](https://img.shields.io/github/v/release/Latestinssan/RTQ?style=flat-square)](https://github.com/Latestinssan/RTQ/releases/tag/v1.0.0)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg?style=flat-square)](LICENSE)
 
-RTQ is a production-grade, dependency-free capability-security runtime for Node.js, TypeScript, Model Context Protocol (MCP) servers, and mobile approval hosts. It turns _"can this agent/tool do this?"_ into a **provable security pipeline**:
+RTQ is a security-focused capability-security runtime for Node.js, TypeScript, Model Context Protocol (MCP) servers, and mobile approval hosts. Security-critical packages declare **zero third-party npm runtime dependencies**. It turns _"can this agent/tool do this?"_ into an **evidence-backed security pipeline**:
 
 ```
 Command → Capability (registered) → Risk (authoritative) → Policy (default-deny)
@@ -46,7 +46,38 @@ Command → Capability (registered) → Risk (authoritative) → Policy (default
 
 While developing **Aartiq**, a disproportionate amount of engineering time was spent repeatedly implementing OS-level sandboxing, capability scoping, fine-grained permission gating, and challenge-response authorization from scratch.
 
-RTQ was created to solve this problem once and for all — packaging a battle-tested, risk-adaptive capability security runtime into a clean suite of reusable packages. With RTQ, developers can instantly integrate capability security, OS-enforced sandboxing, Model Context Protocol (MCP) policy enforcement, and mobile QR challenge-response approvals into their applications without having to build security infrastructure from scratch.
+RTQ was created to solve this problem for developers everywhere — packaging a security-focused capability security runtime into a clean suite of reusable packages. Developed and validated through automated security testing, RTQ allows developers to integrate capability security, OS-enforced sandboxing, Model Context Protocol (MCP) policy enforcement, and mobile QR challenge-response approvals into their applications without having to build security infrastructure from scratch.
+
+---
+
+## 🔬 System Capabilities & Limits
+
+To provide full transparency, RTQ clearly delineates what is implemented, what is verified in CI, and what is outside its current scope:
+
+### ✅ Implemented
+
+- **Capability Registry**: Explicit capability registration with schema validation.
+- **Authoritative Risk Engine**: Structural risk evaluation where caller-supplied risk claims can only raise, never lower, calculated risk.
+- **Declarative Default-Deny Policy**: Missing or unlisted rules evaluate to denial.
+- **HMAC-Signed Single-Use Tickets**: Ticket redemption state is managed by a process-local, atomic ticket store.
+- **OS Sandbox Adapters**: Wrappers for macOS Seatbelt (`sandbox-exec`), Linux bubblewrap (`bwrap`), and Windows AppContainer + Job Objects.
+- **Redacted Audit Logging**: Automatic sanitization of secrets in security logs.
+- **QR / Mobile Approval Protocol**: Single-use challenge-response protocol with zero PIN transmission.
+
+### 🧪 Verified in CI
+
+- **12 Automated Security Invariants**: Rigorous test suites asserting invariants INV-01 through INV-12.
+- **Cross-Platform Enforcement**: Automated sandbox execution tests on macOS, Linux, and Windows runners.
+- **Cross-Language Protocol Vectors**: Node.js vs Dart byte-exact challenge signature validation.
+- **430+ Unit & Integration Tests**: Comprehensive test coverage across all 12 monorepo packages.
+
+### ⚠️ Scope & Evidence Limits
+
+- **Process-Local Ticket Store**: Ticket single-use redemption is currently enforced in process-local memory. Distributed multi-node replay protection requires a distributed shared ticket store backend.
+- **No Formal Security Proof**: Automated CI testing establishes empirical verification, not formal mathematical proof.
+- **Platform Key Storage**: Mobile keypairs use platform secure storage (`flutter_secure_storage` utilizing Android Keystore / iOS Keychain where supported by OS and hardware capabilities).
+- **Host Trusted Computing Base (TCB)**: RTQ governs authorization, ticket verification, and process containment. The internal logic of registered execution handlers (e.g. `system.execute`) remains part of the host application's trusted computing base.
+- **No Independent Third-Party Audit**: RTQ is an open-source alpha security runtime that has not undergone an independent third-party security audit.
 
 ---
 
@@ -151,6 +182,7 @@ const gateway = createMCPGateway({
 });
 
 // Register MCP tool mapping to capability
+// Note: RTQ enforces authorization & sandboxing, but handler safety remains part of host TCB
 gateway.registerToolCapability({
   toolName: "execute_script",
   capabilityName: "system.execute",
@@ -165,18 +197,7 @@ For high-risk operations requiring user verification:
 1. **Download the Android APK**: [Download v1.0.0 APK](https://github.com/Latestinssan/RTQ/releases/download/v1.0.0/app-release.apk).
 2. Install on Android device (Android 12+, Java 17/Dart 3.11 target).
 3. **Scan QR Challenge**: When RTQ returns `approval_required`, it renders a single-use QR challenge.
-4. **Local Ed25519 Signing**: The mobile app verifies the challenge locally and signs the approval using a hardware-backed Ed25519 key without transmitting PINs or static secrets.
-
----
-
-## 🛡️ Security Posture & Guarantees
-
-- **Explicit Surface**: Unregistered capabilities are denied by default.
-- **Default-Deny Policy**: Absence of an explicit allow rule results in denial.
-- **Authoritative Risk Engine**: Caller-supplied risk claims can only escalate risk, never lower it.
-- **Single-Use Signed Tickets**: HMAC-SHA256 authorization tickets bound to capability, input hash, actor, origin, and nonce.
-- **Fail-Closed OS Sandboxing**: macOS Seatbelt (`sandbox-exec`), Linux bubblewrap (`bwrap`), and Windows AppContainer + Job Object. If sandbox creation fails, execution is refused.
-- **Redacted Audit Logging**: Structured security logs automatically sanitize passwords, keys, and tokens.
+4. **Local Ed25519 Signing**: The mobile app verifies the challenge locally and signs the approval using device platform secure storage (`flutter_secure_storage` utilizing Android Keystore / iOS Keychain where supported).
 
 ---
 
@@ -193,4 +214,4 @@ npm test              # Run 430+ unit, contract & security tests
 
 ## 📄 License
 
-Apache-2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE). RTQ is an original, dependency-free implementation created by [Latestinssan](https://github.com/Latestinssan).
+Apache-2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE). RTQ is an original implementation created by [Latestinssan](https://github.com/Latestinssan).

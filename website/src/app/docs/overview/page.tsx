@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { APP_INFO } from "@/lib/version";
 import { COMMIT_SHA } from "@/components/evidence/EvidenceBadge";
-import { TestTube, Shield, BookOpen, ExternalLink, Download, Smartphone, Package } from "lucide-react";
+import { TestTube, Shield, BookOpen, ExternalLink, Download, Smartphone, Package, CheckCircle2, AlertTriangle, ShieldCheck } from "lucide-react";
 
 export const metadata = {
   title: "RTQ Overview",
@@ -19,9 +19,10 @@ export default function OverviewPage() {
           RTQ Overview
         </h1>
         <p className="mt-4 text-base text-white/70 leading-relaxed">
-          RTQ is a production-grade, dependency-free capability-security runtime for Node.js, TypeScript,
-          Model Context Protocol (MCP) servers, and mobile approval hosts. Every operation requires an
-          explicitly registered capability; authorizations are short-lived, single-use, cryptographically-signed tickets.
+          RTQ is a security-focused capability-security runtime for Node.js, TypeScript,
+          Model Context Protocol (MCP) servers, and mobile approval hosts. Security-critical packages declare
+          zero third-party npm runtime dependencies. Every operation requires an explicitly registered capability;
+          authorizations are short-lived, single-use, cryptographically-signed tickets.
         </p>
       </div>
 
@@ -37,11 +38,64 @@ export default function OverviewPage() {
           authorization from scratch.
         </p>
         <p className="text-white/80">
-          RTQ was created to solve this problem once and for all — packaging a battle-tested, risk-adaptive capability
-          security runtime into a clean suite of reusable packages. With RTQ, developers can instantly integrate capability
-          security, OS-enforced sandboxing, Model Context Protocol (MCP) policy enforcement, and mobile QR challenge-response
-          approvals into their applications without having to build security infrastructure from scratch.
+          RTQ was created to solve this problem for developers everywhere — packaging a security-focused capability
+          security runtime into a clean suite of reusable packages. Developed and validated through automated security testing,
+          RTQ enables developers to integrate capability security, OS-enforced sandboxing, Model Context Protocol (MCP) policy
+          enforcement, and mobile QR challenge-response approvals into their applications without having to build security
+          infrastructure from scratch.
         </p>
+      </div>
+
+      {/* Structured Implemented vs Verified vs Evidence Limits */}
+      <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 space-y-6">
+        <h2 className="text-lg font-bold text-white flex items-center gap-2">
+          <ShieldCheck className="text-sky-400" size={18} />
+          <span>System Capabilities &amp; Verification Evidence</span>
+        </h2>
+
+        <div className="grid gap-6 md:grid-cols-3 text-xs">
+          {/* Implemented */}
+          <div className="space-y-3 rounded-xl border border-sky-500/20 bg-sky-500/5 p-4">
+            <h3 className="font-mono font-bold text-sky-400 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+              <CheckCircle2 size={14} /> Implemented
+            </h3>
+            <ul className="space-y-2 text-white/70">
+              <li>&bull; Capability registry with schema validation</li>
+              <li>&bull; Authoritative risk evaluation engine</li>
+              <li>&bull; Default-deny declarative policy engine</li>
+              <li>&bull; Process-local single-use ticket store</li>
+              <li>&bull; macOS Seatbelt, Linux bwrap, Windows AppContainer sandbox adapters</li>
+              <li>&bull; Redacted structured audit logger</li>
+            </ul>
+          </div>
+
+          {/* Verified in CI */}
+          <div className="space-y-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4">
+            <h3 className="font-mono font-bold text-emerald-400 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+              <TestTube size={14} /> Verified in CI
+            </h3>
+            <ul className="space-y-2 text-white/70">
+              <li>&bull; 12 Automated security invariants (INV-01 .. INV-12)</li>
+              <li>&bull; Platform sandbox execution tests</li>
+              <li>&bull; Cross-language protocol vectors (Node vs Dart)</li>
+              <li>&bull; 430+ unit, contract &amp; security test suite</li>
+            </ul>
+          </div>
+
+          {/* Evidence Limits */}
+          <div className="space-y-3 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
+            <h3 className="font-mono font-bold text-amber-400 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+              <AlertTriangle size={14} /> Scope &amp; Evidence Limits
+            </h3>
+            <ul className="space-y-2 text-amber-200/70">
+              <li>&bull; Ticket store redemption state is process-local</li>
+              <li>&bull; Empirical CI testing, not formal mathematical proof</li>
+              <li>&bull; Mobile keypairs use platform storage (Keystore/Keychain)</li>
+              <li>&bull; Handler logic remains part of host application TCB</li>
+              <li>&bull; No independent third-party audit performed</li>
+            </ul>
+          </div>
+        </div>
       </div>
 
       {/* Release & Downloads Card */}
@@ -141,18 +195,6 @@ export default function OverviewPage() {
               <p className="mt-1 text-white/50">{desc}</p>
             </a>
           ))}
-        </div>
-      </div>
-
-      {/* Quick Start */}
-      <div>
-        <h2 className="text-xl font-bold text-white mb-4">Quick Start</h2>
-        <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-5 font-mono text-xs leading-relaxed text-white/60 space-y-3">
-          <p className="text-white/40"># Install the main security runtime</p>
-          <p className="text-emerald-300 font-bold">npm install @rtq/security</p>
-          <br />
-          <p className="text-white/40"># Or install the CLI</p>
-          <p className="text-emerald-300 font-bold">npm install -g @rtq/cli</p>
         </div>
       </div>
 
