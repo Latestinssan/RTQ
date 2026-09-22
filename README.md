@@ -5,7 +5,7 @@
 # RTQ — Risk-Adaptive Capability Security Runtime
 
 [![npm version](https://img.shields.io/npm/v/@rtq/security.svg?style=flat-square)](https://www.npmjs.com/package/@rtq/security)
-[![npm downloads](https://img.shields.io/npm/dm/@rtq/security.svg?style=flat-square&label=npm%20downloads)](https://www.npmjs.com/package/@rtq/security)
+[![npm downloads](https://img.shields.io/badge/npm%20downloads-1833-brightgreen?style=flat-square)](https://www.npmjs.com/package/@rtq/security)
 [![GitHub Release](https://img.shields.io/github/v/release/Latestinssan/RTQ?style=flat-square)](https://github.com/Latestinssan/RTQ/releases/tag/v0.1.0)
 [![GitHub All Releases Downloads](https://img.shields.io/github/downloads/Latestinssan/RTQ/total?style=flat-square&color=emerald&label=github%20downloads)](https://github.com/Latestinssan/RTQ/releases/tag/v0.1.0)
 [![APK Downloads](https://img.shields.io/github/downloads/Latestinssan/RTQ/v0.1.0/app-release.apk?style=flat-square&label=apk%20downloads&color=blue)](https://github.com/Latestinssan/RTQ/releases/download/v0.1.0/app-release.apk)
