@@ -18,5 +18,15 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "keywords": [
+    "rtq",
+    "crypto",
+    "sha-256",
+    "canonicalization",
+    "deterministic",
+    "hashing",
+    "security",
+    "cryptography"
+  ]
 }

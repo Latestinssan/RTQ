@@ -21,5 +21,15 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "keywords": [
+    "rtq",
+    "risk",
+    "severity",
+    "advisory",
+    "risk-engine",
+    "model-risk",
+    "irreversible",
+    "network"
+  ]
 }

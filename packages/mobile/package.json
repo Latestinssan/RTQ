@@ -23,5 +23,15 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "keywords": [
+    "rtq",
+    "mobile",
+    "approval",
+    "pairing",
+    "request-approval",
+    "runtime",
+    "security",
+    "approval-host"
+  ]
 }

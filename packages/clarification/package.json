@@ -21,5 +21,15 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "keywords": [
+    "rtq",
+    "clarification",
+    "ambiguity",
+    "tool-calling",
+    "mcp",
+    "assistant",
+    "policy",
+    "clarify"
+  ]
 }

@@ -21,5 +21,16 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "keywords": [
+    "rtq",
+    "audit",
+    "audit-log",
+    "audit-trail",
+    "security",
+    "compliance",
+    "sink",
+    "telemetry",
+    "provenance"
+  ]
 }

@@ -28,5 +28,18 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "keywords": [
+    "rtq",
+    "mcp",
+    "model-context-protocol",
+    "tool-safety",
+    "risk",
+    "policy",
+    "sandbox",
+    "approval",
+    "fail-closed",
+    "ai-agents",
+    "gateway"
+  ]
 }

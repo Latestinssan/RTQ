@@ -18,5 +18,17 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "keywords": [
+    "rtq",
+    "sandbox",
+    "bubblewrap",
+    "seatbelt",
+    "bwrap",
+    "os-enforcement",
+    "isolation",
+    "linux",
+    "macos",
+    "fail-closed"
+  ]
 }

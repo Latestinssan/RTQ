@@ -22,5 +22,16 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "keywords": [
+    "rtq",
+    "approval",
+    "approval-ticket",
+    "approval-workflow",
+    "capability",
+    "authorization",
+    "security",
+    "mcp",
+    "fail-closed"
+  ]
 }

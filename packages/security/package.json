@@ -28,5 +28,17 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "keywords": [
+    "rtq",
+    "security",
+    "risk",
+    "policy",
+    "sandbox",
+    "network",
+    "runtime",
+    "mcp",
+    "fail-closed",
+    "invariants"
+  ]
 }

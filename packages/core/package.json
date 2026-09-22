@@ -22,5 +22,15 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "keywords": [
+    "rtq",
+    "capability",
+    "capability-registry",
+    "capabilities",
+    "structured-commands",
+    "authorization",
+    "security",
+    "core"
+  ]
 }

@@ -29,5 +29,16 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "keywords": [
+    "rtq",
+    "cli",
+    "mcp",
+    "sandbox",
+    "capability",
+    "approval",
+    "risk",
+    "security",
+    "command-line"
+  ]
 }
