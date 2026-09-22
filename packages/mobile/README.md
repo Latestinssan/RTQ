@@ -1,4 +1,4 @@
-# @rtq/mobile
+# Rtq (Mobile)
 
 **RTQ on a phone.** `@rtq/mobile` is the operator's mobile approval/pairing
 host: a small, isolated, RTQ-hosted server + a device simulator that proves the
