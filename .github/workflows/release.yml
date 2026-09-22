@@ -103,7 +103,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: rtq-ios
-          path: build/ios/ipa/*.ipa
+          path: build/ios/ipa/
           if-no-files-found: error
 
   release:
