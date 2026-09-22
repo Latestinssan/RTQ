@@ -13,7 +13,7 @@
  */
 
 import type { Ed25519KeyPair } from "@rtq/crypto";
-import {
+import { ensureBiometricAuth } from "./biometric";
   parseChallengeV1,
   parsePairingChallengeV1,
   signApprovalV1,
@@ -24,6 +24,7 @@ import {
   type SignedApprovalV1,
   type SignedPairingResponseV1,
 } from "@rtq/approval";
+import { ensureBiometricAuth } from "./biometric";
 
 export interface SimulatedDeviceOptions {
   keyPair: Ed25519KeyPair;
@@ -84,7 +85,18 @@ export class SimulatedDevice {
     });
   }
 
-  /** Build a pairing response for a pairing payload (throws when unverifiable). */
+    /**
+   * Approve with biometric check (awaitable). Returns a SignedApprovalV1 after the user authenticates.
+   */
+  async approveWithBiometric(
+    payload: string,
+    decision: "granted" | "denied" = "granted",
+  ): Promise<SignedApprovalV1> {
+    await ensureBiometricAuth();
+    return this.approve(payload, decision);
+  }
+
+
   respondToPairing(payload: string): SignedPairingResponseV1 {
     const parsed = parsePairingChallengeV1(payload);
     if (!parsed.ok) {
