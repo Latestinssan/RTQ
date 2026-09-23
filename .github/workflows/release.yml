@@ -96,14 +96,14 @@ jobs:
           printf '%s' "${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}" \
             | base64 -D > ios/Runner/GoogleService-Info.plist
 
-      - name: "Build IPA (unsigned)"
+      - name: "Build unsigned archive"
         run: flutter build ipa --release --no-codesign
 
-      - name: "Upload IPA artifact"
+      - name: "Upload XCArchive artifact"
         uses: actions/upload-artifact@v4
         with:
           name: rtq-ios
-          path: apps/rtq-mobile/build/ios/ipa/*.ipa
+          path: apps/rtq-mobile/build/ios/archive/*.xcarchive
           if-no-files-found: error
 
   release:
